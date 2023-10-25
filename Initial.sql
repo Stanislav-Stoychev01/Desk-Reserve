@@ -1,0 +1,12 @@
+CREATE DATABASE test123
+USE test123
+
+CREATE TABLE [Dog]
+(
+	[id] UNIQUEIDENTIFIER PRIMARY KEY,
+	[age] INT,
+	[name] NVARCHAR(255) 
+)
+
+INSERT INTO Dog(id, age , name)
+VALUES(NEWID(),10,'Brian')
