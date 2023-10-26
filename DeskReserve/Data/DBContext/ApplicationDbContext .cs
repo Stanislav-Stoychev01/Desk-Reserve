@@ -9,6 +9,6 @@ namespace DeskReserve.Data.DBContext
         : base(options) { }
 
         public DbSet<Dog> Dogs { get; set; }
-
+        public DbSet<Building> Buildings { get; set; }
     }
 }
