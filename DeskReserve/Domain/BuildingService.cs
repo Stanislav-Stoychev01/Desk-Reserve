@@ -23,7 +23,6 @@ namespace DeskReserve.Domain
         {
             var building = await _dbContext.Buildings.FindAsync(id);
 
-
             return building;
         }
 
@@ -38,6 +37,7 @@ namespace DeskReserve.Domain
         public async Task<IActionResult> DeleteBuilding(Guid id)
         {
             var building = await _dbContext.Buildings.FindAsync(id);
+
             if (building == null)
             {
                 return new NotFoundResult();

@@ -7,7 +7,6 @@ using Microsoft.IdentityModel.Tokens;
 const String CorsDisablePolicy = "AllowAnyOrigin";
 var builder = WebApplication.CreateBuilder(args);
 
-
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
