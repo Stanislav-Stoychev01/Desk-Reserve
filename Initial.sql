@@ -8,5 +8,13 @@ CREATE TABLE [Dog]
 	[name] NVARCHAR(255) 
 )
 
+CREATE TABLE [Desk](
+	[DeskId] UNIQUEIDENTIFIER PRIMARY KEY,
+	[DeskNumber] INT,
+	[RoomId] UNIQUEIDENTIFIER,
+	[IsOccupied] BIT,
+	[IsStatic] BIT
+)
+
 INSERT INTO Dog(id, age , name)
 VALUES(NEWID(),10,'Brian')

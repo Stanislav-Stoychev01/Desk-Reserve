@@ -10,5 +10,6 @@ namespace DeskReserve.Data.DBContext
 
         public DbSet<Dog> Dogs { get; set; }
 
-    }
+        public  DbSet<Desk> Desks { get; set; }
+	}
 }

@@ -27,6 +27,8 @@ builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlSer
 
 builder.Services.AddScoped<DogService, DogService>();
 builder.Services.AddScoped<DogController, DogController>();
+builder.Services.AddScoped<DeskService, DeskService>();
+builder.Services.AddScoped<DesksController, DesksController>();
 
 var app = builder.Build();
 
