@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using DeskReserve.Data.DBContext;
+﻿using Microsoft.AspNetCore.Mvc;
 using DeskReserve.Data.DBContext.Entity;
+using DeskReserve.Domain;
 
 namespace DeskReserve.Controllers
 {
@@ -14,25 +8,26 @@ namespace DeskReserve.Controllers
     [ApiController]
     public class FloorsController : ControllerBase
     {
-        private readonly ApplicationDbContext _context;
+        private readonly FloorService _floorService;
 
-        public FloorsController(ApplicationDbContext context)
+        public FloorsController(FloorService floorService)
         {
-            _context = context;
+            _floorService = floorService;
         }
 
         // GET: api/Floors
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Floor>>> GetFloors()
         {
-            return await _context.Floors.ToListAsync();
+            var floors = await _floorService.GetFloors();
+            return Ok(floors);
         }
 
         // GET: api/Floors/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Floor>> GetFloor(Guid id)
         {
-            var floor = await _context.Floors.FindAsync(id);
+            var floor = await _floorService.GetFloor(id);
 
             if (floor == null)
             {
@@ -43,7 +38,6 @@ namespace DeskReserve.Controllers
         }
 
         // PUT: api/Floors/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
         public async Task<IActionResult> PutFloor(Guid id, Floor floor)
         {
@@ -52,57 +46,26 @@ namespace DeskReserve.Controllers
                 return BadRequest();
             }
 
-            _context.Entry(floor).State = EntityState.Modified;
+            var success = await _floorService.UpdateFloor(id, floor);
 
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!FloorExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
+            return success ? NoContent() : NotFound();
         }
 
         // POST: api/Floors
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         public async Task<ActionResult<Floor>> PostFloor(Floor floor)
         {
-            _context.Floors.Add(floor);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetFloor", new { id = floor.FloorId }, floor);
+            var newFloor = await _floorService.CreateFloor(floor);
+            return CreatedAtAction("GetFloor", new { id = newFloor.FloorId }, newFloor);
         }
 
         // DELETE: api/Floors/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteFloor(Guid id)
         {
-            var floor = await _context.Floors.FindAsync(id);
-            if (floor == null)
-            {
-                return NotFound();
-            }
+            var success = await _floorService.DeleteFloor(id);
 
-            _context.Floors.Remove(floor);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
-        }
-
-        private bool FloorExists(Guid id)
-        {
-            return _context.Floors.Any(e => e.FloorId == id);
+            return success ? NoContent() : NotFound();
         }
     }
 }
