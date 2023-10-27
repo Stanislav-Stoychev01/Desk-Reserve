@@ -12,7 +12,7 @@ namespace DeskReserve.Data.DBContext
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer("Server=(localdb)\\mssqllocaldb;Database=DeskReserve;Trusted_Connection=True;");
+            optionsBuilder.UseSqlServer("Name=ConnectionStrings:DefaultConnection");
         }
 
     }

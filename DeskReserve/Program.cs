@@ -1,3 +1,4 @@
+using DeskReserve.Controllers;
 using DeskReserve.Data.DBContext;
 using DeskReserve.Domain;
 using Microsoft.EntityFrameworkCore;
@@ -23,6 +24,9 @@ builder.Services.AddCors(options =>
 
 String connectionString = builder.Configuration["ConnectionStrings:DefaultConnection"];
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connectionString));
+
+builder.Services.AddScoped<FloorService, FloorService>();
+builder.Services.AddScoped<FloorsController, FloorsController>();
 
 var app = builder.Build();
 
