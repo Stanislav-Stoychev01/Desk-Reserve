@@ -1,20 +1,20 @@
+﻿using DeskReserve.Data.DBContext.Entity;
 using DeskReserve.Data.DBContext;
-using DeskReserve.Data.DBContext.Entity;
 
 namespace DeskReserve.Domain
 {
-    public class DogService
+    public class FloorService
     {
         private readonly ApplicationDbContext _dbContext;
-        
-        public DogService(ApplicationDbContext dbContext)
+
+        public FloorService(ApplicationDbContext dbContext)
         {
             _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
         }
 
-        public List<Dog> GetAllDogs()
+        public List<Floor> GetAllFloors()
         {
-            return _dbContext.Dogs.ToList();
+            return _dbContext.Floors.ToList();
         }
     }
 }

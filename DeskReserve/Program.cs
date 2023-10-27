@@ -1,4 +1,3 @@
-using DeskReserve.Controllers;
 using DeskReserve.Data.DBContext;
 using DeskReserve.Domain;
 using Microsoft.EntityFrameworkCore;
@@ -24,9 +23,6 @@ builder.Services.AddCors(options =>
 
 String connectionString = builder.Configuration["ConnectionStrings:DefaultConnection"];
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connectionString));
-
-builder.Services.AddScoped<DogService, DogService>();
-builder.Services.AddScoped<DogController, DogController>();
 
 var app = builder.Build();
 

@@ -8,7 +8,12 @@ namespace DeskReserve.Data.DBContext
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) 
         : base(options) { }
 
-        public DbSet<Dog> Dogs { get; set; }
+        public DbSet<Floor> Floors { get; set; }
+
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            optionsBuilder.UseSqlServer("Server=(localdb)\\mssqllocaldb;Database=DeskReserve;Trusted_Connection=True;");
+        }
 
     }
 }
