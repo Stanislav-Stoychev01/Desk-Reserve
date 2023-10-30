@@ -2,6 +2,8 @@
 using DeskReserve.Domain;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Reflection.Metadata;
+using System;
 
 namespace DeskReserve.Controllers
 {
@@ -46,11 +48,37 @@ namespace DeskReserve.Controllers
             var buildingAdd = await _buildingService.PostBuilding(building);
             return CreatedAtAction(nameof(GetId), new { id = buildingAdd.BuildingId }, buildingAdd);
         }
-
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteBuilding(Guid id)
         {
-            return await _buildingService.DeleteBuilding(id);
+            var deletionResult = await _buildingService.DeleteBuilding(id);
+
+            if (deletionResult)
+            {
+                return NoContent();
+            }
+            else
+            {
+                return NotFound();
+            }
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> PutBuilding(Guid id, Building building)
+        {
+            if (id != building.BuildingId)
+            {
+                return BadRequest();
+            }
+
+            var result = await _buildingService.UpdateBuilding(id, building);
+
+            if (!result)
+            {
+                return NotFound();
+            }
+
+            return NoContent();
         }
     }
 }

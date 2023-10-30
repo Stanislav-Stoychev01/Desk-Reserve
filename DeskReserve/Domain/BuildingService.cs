@@ -2,6 +2,7 @@
 using DeskReserve.Data.DBContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace DeskReserve.Domain
 {
@@ -34,19 +35,36 @@ namespace DeskReserve.Domain
             return building;
         }
 
-        public async Task<IActionResult> DeleteBuilding(Guid id)
+        public async Task<bool> DeleteBuilding(Guid id)
         {
             var building = await _dbContext.Buildings.FindAsync(id);
 
             if (building == null)
             {
-                return new NotFoundResult();
+                return false;
             }
 
             _dbContext.Buildings.Remove(building);
             await _dbContext.SaveChangesAsync();
 
-            return new NoContentResult();
+            return true;
+        }
+
+        public async Task<bool> UpdateBuilding(Guid id, Building building)
+        {
+            var buildingExist = await _dbContext.Buildings.FindAsync(id);
+
+            if (buildingExist == null)
+            {
+                return false;
+            }
+        
+            _dbContext.Entry(buildingExist).State = EntityState.Detached;
+            _dbContext.Buildings.Update(building);
+
+            await _dbContext.SaveChangesAsync();
+
+            return true;
         }
     }
 }
