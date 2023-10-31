@@ -1,12 +1,12 @@
 CREATE DATABASE test123
 USE test123
 
-CREATE TABLE [Dog]
-(
-	[id] UNIQUEIDENTIFIER PRIMARY KEY,
-	[age] INT,
-	[name] NVARCHAR(255) 
-)
+drop table building
 
-INSERT INTO Dog(id, age , name)
-VALUES(NEWID(),10,'Brian')
+CREATE TABLE [building] (
+    [BuildingId] uniqueidentifier NOT NULL PRIMARY KEY,
+    [City] nvarchar(30) NOT NULL,
+    [StreetAddress] nvarchar(100) NOT NULL,
+    [Neighbourhood] nvarchar(50) NOT NULL,
+    [Floors] int NOT NULL
+);

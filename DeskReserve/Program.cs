@@ -2,7 +2,6 @@ using DeskReserve.Controllers;
 using DeskReserve.Data.DBContext;
 using DeskReserve.Domain;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 
 const String CorsDisablePolicy = "AllowAnyOrigin";
 var builder = WebApplication.CreateBuilder(args);

@@ -1,8 +1,6 @@
 ﻿using DeskReserve.Data.DBContext.Entity;
 using DeskReserve.Data.DBContext;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Mvc;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace DeskReserve.Domain
 {
@@ -15,9 +13,9 @@ namespace DeskReserve.Domain
             _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
         }
 
-        public List<Building> GetAllBuildings()
+        public async Task<List<Building>> GetAllBuildings()
         {
-            return _dbContext.Buildings.ToList();
+            return await _dbContext.Buildings.ToListAsync();
         }
 
         public async Task<Building> GetBuildingById(Guid id)
