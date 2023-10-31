@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using DeskReserve.Data.DBContext.Entity;
 using DeskReserve.Domain;
+using Microsoft.AspNetCore.JsonPatch;
 
 namespace DeskReserve.Controllers
 {

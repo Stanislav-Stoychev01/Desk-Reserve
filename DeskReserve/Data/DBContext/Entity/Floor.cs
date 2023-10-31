@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DeskReserve.Data.DBContext.Entity
@@ -9,8 +10,11 @@ namespace DeskReserve.Data.DBContext.Entity
         [Key]
         public Guid FloorId { get; set; }
 
+        [Required]
         public int FloorNumber{ get; set; }
 
+        [Required]
+        [DefaultValue(false)]
         public bool HasElevator { get; set; }
 
         [StringLength(150)]

@@ -53,6 +53,7 @@ namespace DeskReserve.Domain
         public async Task<bool> DeleteFloor(Guid id)
         {
             var floor = await _context.Floors.FindAsync(id);
+
             if (floor == null)
             {
                 return false;
