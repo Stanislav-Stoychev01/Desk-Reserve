@@ -1,57 +1,55 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using DeskReserve.Data.DBContext.Entity;
+using DeskReserve.Interfaces;
 using DeskReserve.Domain;
-using System.Net.Mime;
 
 namespace DeskReserve.Controllers
 {
     [Route("api/floors")]
     [ApiController]
-    public class FloorController : ControllerBase, IFloorController
+    public class FloorController : Controller
     {
-        private readonly IFloorService _floorService;
+        private readonly IFloorService _service;
 
-        public FloorController(IFloorService floorService)
+        public FloorController(IFloorService service)
         {
-            _floorService = floorService ?? throw new ArgumentNullException(nameof(floorService));
+            _service = service;
         }
 
-        [HttpGet("list")]
-        public async Task<ActionResult<IEnumerable<Floor>>> GetAll()
+        [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<IEnumerable<FloorDto>>> Get()
         {
-            var floors = await _floorService.GetAllAsync();
-            return Ok(floors);
+            var entities = await _service.GetAllAsync();
+            return entities != null ? Ok(entities) : NotFound();
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Floor>> GetById(Guid id)
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<FloorDto>> Get(Guid id)
         {
-            var floor = await _floorService.GetOneAsync(id);
+            var entity = await _service.GetOneAsync(id);
 
-            if (floor == null)
-            {
-                return NotFound();
-            }
-
-            return floor;
+            return entity != null ? Ok(entity) : NotFound();
         }
 
-        [HttpPut("edit/{id}")]
-        [Consumes(MediaTypeNames.Application.Json)]
+        [HttpPut("{id}/edit")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> UpdateOne(Guid id, Floor floor)
+        public async Task<IActionResult> Put(Guid id, FloorDto floor)
         {
-            var success = await _floorService.UpdateOneAsync(id, floor);
+            await _service.UpdateOneAsync(id, floor);
 
-            return success ? NoContent() : NotFound();
+            return NoContent();
         }
 
         [HttpPost("new")]
-        public async Task<ActionResult<Floor>> Create(Floor floor)
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        public async Task<ActionResult<FloorDto>> Post(FloorDto floor)
         {
-            var newFloor = await _floorService.CreateOneAsync(floor);
-            return StatusCode(StatusCodes.Status201Created, newFloor);
+            var success = await _service.CreateOneAsync(floor);
+
+            return success ? StatusCode(StatusCodes.Status201Created) : StatusCode(StatusCodes.Status500InternalServerError);
         }
 
         [HttpDelete("{id}")]
@@ -59,7 +57,7 @@ namespace DeskReserve.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Delete(Guid id)
         {
-            var success = await _floorService.DeleteOneAsync(id);
+            var success = await _service.DeleteOneAsync(id);
 
             return success ? NoContent() : NotFound();
         }
