@@ -1,108 +1,71 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using DeskReserve.Data.DBContext;
+﻿using Microsoft.AspNetCore.Mvc;
 using DeskReserve.Data.DBContext.Entity;
+using DeskReserve.Domain;
+using System.Net.Mime;
 
 namespace DeskReserve.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class DesksController : ControllerBase
+    public class DesksController : ControllerBase, IDeskController
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IDeskService _service;
 
-        public DesksController(ApplicationDbContext context)
+		public DesksController(IDeskService service)
+		{
+			_service = service ?? throw new ArgumentNullException(nameof(service));
+		}
+
+		[HttpGet]
+        public async Task<ActionResult<IEnumerable<Desk>>> GetAll()
         {
-            _context = context;
+            var desks = await _service.GetAllAsync();
+			return Ok(desks);
         }
 
-        // GET: api/Desks
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Desk>>> GetDesk()
-        {
-            return await _context.Desks.ToListAsync();
-        }
-
-        // GET: api/Desks/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Desk>> GetDesk(Guid id)
+		[ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Desk))]
+		[ProducesResponseType(StatusCodes.Status404NotFound)]
+		public async Task<ActionResult<Desk>> GetById(Guid id)
         {
-            var desk = await _context.Desks.FindAsync(id);
+            var desk = await _service.GetOneAsync(id);
 
-            if (desk == null)
-            {
-                return NotFound();
-            }
+			return desk == null ? NotFound() : Ok(desk);
+		}
 
-            return desk;
-        }
+		[HttpPut("{id}")]
+		[Consumes(MediaTypeNames.Application.Json)]
+		[ProducesResponseType(StatusCodes.Status204NoContent)]
+		[ProducesResponseType(StatusCodes.Status404NotFound)]
+		public async Task<IActionResult> Update(Guid id, Desk desk)
+		{
+			if (id != desk.DeskId)
+			{
+				return BadRequest();
+			}
 
-        // PUT: api/Desks/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutDesk(Guid id, Desk desk)
-        {
-            if (id != desk.DeskId)
-            {
-                return BadRequest();
-            }
+			var success = await _service.UpdateOneAsync(id, desk);
 
-            _context.Entry(desk).State = EntityState.Modified;
+			return success ? NoContent() : NotFound();
+		}
 
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!DeskExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+		[HttpPost]
+		public async Task<ActionResult<Desk>> Create(Desk desk)
+		{
+			var newDesk = await _service.CreateOneAsync(desk);
 
-            return NoContent();
-        }
+			return Ok(newDesk);
+		}
 
-        // POST: api/Desks
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<Desk>> PostDesk(Desk desk)
-        {
-            _context.Desks.Add(desk);
-            await _context.SaveChangesAsync();
+		[HttpDelete("{id}")]
+		[ProducesResponseType(StatusCodes.Status204NoContent)]
+		[ProducesResponseType(StatusCodes.Status404NotFound)]
+		public async Task<IActionResult> Delete(Guid id)
+		{
+			var success = await _service.DeleteOneAsync(id);
 
-            return CreatedAtAction("GetDesk", new { id = desk.DeskId }, desk);
-        }
+			return success ? NoContent() : NotFound();
+		}
 
-        // DELETE: api/Desks/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteDesk(Guid id)
-        {
-            var desk = await _context.Desks.FindAsync(id);
-            if (desk == null)
-            {
-                return NotFound();
-            }
-
-            _context.Desks.Remove(desk);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
-        }
-
-        private bool DeskExists(Guid id)
-        {
-            return _context.Desks.Any(e => e.DeskId == id);
-        }
-    }
+	}
 }

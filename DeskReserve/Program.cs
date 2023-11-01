@@ -25,10 +25,8 @@ builder.Services.AddCors(options =>
 String connectionString = builder.Configuration["ConnectionStrings:DefaultConnection"];
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connectionString));
 
-builder.Services.AddScoped<DogService, DogService>();
-builder.Services.AddScoped<DogController, DogController>();
-builder.Services.AddScoped<DeskService, DeskService>();
-builder.Services.AddScoped<DesksController, DesksController>();
+builder.Services.AddScoped<IDeskService, DeskService>();
+builder.Services.AddScoped<IDeskController, DesksController>();
 
 var app = builder.Build();
 

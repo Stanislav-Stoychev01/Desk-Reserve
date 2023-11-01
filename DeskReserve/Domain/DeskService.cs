@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DeskReserve.Domain
 {
-	public class DeskService
+	public class DeskService : IDeskService
 	{
 		private readonly ApplicationDbContext _dbContext;
 
@@ -13,17 +13,17 @@ namespace DeskReserve.Domain
 			_dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
 		}
 
-		public List<Desk> GetAllDesks()
+		public async Task<IEnumerable<Desk>> GetAllAsync()
 		{
-			return _dbContext.Desks.ToList();
+			return await _dbContext.Desks.ToListAsync();
 		}
 
-		public async Task<Desk> GetDesk(Guid id)
+		public async Task<Desk> GetOneAsync(Guid id)
 		{
 			return await _dbContext.Desks.FindAsync(id);
 		}
 
-		public async Task<bool> UpdateDesk(Guid id, Desk desk)
+		public async Task<bool> UpdateOneAsync(Guid id, Desk desk)
 		{
 			if (id != desk.DeskId)
 			{
@@ -43,16 +43,17 @@ namespace DeskReserve.Domain
 			}
 		}
 
-		public async Task<Desk> CreateDesk(Desk desk)
+		public async Task<Desk> CreateOneAsync(Desk desk)
 		{
 			_dbContext.Desks.Add(desk);
 			await _dbContext.SaveChangesAsync();
 			return desk;
 		}
 
-		public async Task<bool> DeleteDesk(Guid id)
+		public async Task<bool> DeleteOneAsync(Guid id)
 		{
 			var desk = await _dbContext.Desks.FindAsync(id);
+
 			if (desk == null)
 			{
 				return false;
@@ -60,6 +61,7 @@ namespace DeskReserve.Domain
 
 			_dbContext.Desks.Remove(desk);
 			await _dbContext.SaveChangesAsync();
+
 			return true;
 		}
 	}
