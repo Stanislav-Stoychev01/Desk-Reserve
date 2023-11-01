@@ -7,32 +7,36 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DeskReserve.Data.DBContext;
 using DeskReserve.Data.DBContext.Entity;
+using DeskReserve.Domain;
+using System.Net.Mime;
+using System.Drawing;
 
 namespace DeskReserve.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class RoomsController : ControllerBase
+    public class RoomsController : ControllerBase, IRoomController
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IRoomService _roomService;
 
-        public RoomsController(ApplicationDbContext context)
+        public RoomsController(IRoomService roomService)
         {
-            _context = context;
-        }
+			_roomService = roomService ?? throw new ArgumentNullException(nameof(_roomService));
+		}
 
         // GET: api/Rooms
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Room>>> GetRooms()
+        [HttpGet("list")]
+        public async Task<ActionResult<IEnumerable<Room>>> GetAll()
         {
-            return await _context.Rooms.ToListAsync();
+            var rooms = await _roomService.GetAllAsync();
+            return Ok(rooms);
         }
 
         // GET: api/Rooms/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Room>> GetRoom(Guid id)
+        public async Task<ActionResult<Room>> GetById(Guid id)
         {
-            var room = await _context.Rooms.FindAsync(id);
+            var room = await _roomService.GetOneAsync(id);
 
             if (room == null)
             {
@@ -42,67 +46,42 @@ namespace DeskReserve.Controllers
             return room;
         }
 
-        // PUT: api/Rooms/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutRoom(Guid id, Room room)
+		// PUT: api/Rooms/5
+		// To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+		[HttpPut("edit/{id}")]
+		[Consumes(MediaTypeNames.Application.Json)]
+		[ProducesResponseType(StatusCodes.Status204NoContent)]
+		[ProducesResponseType(StatusCodes.Status404NotFound)]
+		public async Task<IActionResult> UpdateOne(Guid id, Room room)
         {
-            if (id != room.RoomId)
-            {
-                return BadRequest();
-            }
+			var success = await _roomService.UpdateOneAsync(id, room);
 
-            _context.Entry(room).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!RoomExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
-        }
+			return success ? NoContent() : NotFound();
+		}
 
         // POST: api/Rooms
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<Room>> PostRoom(Room room)
+        [HttpPost("new")]
+        public async Task<ActionResult<Room>> Create(Room room)
         {
-            _context.Rooms.Add(room);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetRoom", new { id = room.RoomId }, room);
-        }
+			var newRoom = await _roomService.CreateOneAsync(room);
+            return Ok(newRoom);//StatusCode(StatusCodes.Status201Created, newRoom);
+		}
 
         // DELETE: api/Rooms/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteRoom(Guid id)
+		[ProducesResponseType(StatusCodes.Status204NoContent)]
+		[ProducesResponseType(StatusCodes.Status404NotFound)]
+		public async Task<IActionResult> Delete(Guid id)
         {
-            var room = await _context.Rooms.FindAsync(id);
-            if (room == null)
-            {
-                return NotFound();
-            }
+			var success = await _roomService.DeleteOneAsync(id);
 
-            _context.Rooms.Remove(room);
-            await _context.SaveChangesAsync();
+			return success ? NoContent() : NotFound();
+		}
 
-            return NoContent();
-        }
-
-        private bool RoomExists(Guid id)
+        /*private bool RoomExists(Guid id)
         {
-            return _context.Rooms.Any(e => e.RoomId == id);
-        }
+            return _roomService.Rooms.Any(e => e.RoomId == id);
+        }*/
     }
 }

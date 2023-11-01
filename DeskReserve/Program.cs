@@ -28,6 +28,9 @@ builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlSer
 builder.Services.AddScoped<DogService, DogService>();
 builder.Services.AddScoped<DogController, DogController>();
 
+builder.Services.AddScoped<IRoomService, RoomService>();
+builder.Services.AddScoped<IRoomController, RoomsController>();
+
 var app = builder.Build();
 
 app.UseCors(CorsDisablePolicy);

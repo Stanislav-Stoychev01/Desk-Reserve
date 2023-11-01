@@ -9,7 +9,7 @@ namespace DeskReserve.Data.DBContext.Entity
 		[Key]
 		public Guid RoomId { get; set; }
 		public int RoomNumber { get; set; }
-		public int FloorId { get; set; }
+		public Guid FloorId { get; set; }
 		public bool HasAirConditioner  { get; set; }
 	}
 }
