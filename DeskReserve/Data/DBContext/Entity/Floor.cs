@@ -1,10 +1,9 @@
-﻿using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DeskReserve.Data.DBContext.Entity
 {
-    [Table("Floors")]
+    [Table("Floor")]
     public class Floor
     {
         [Key]
@@ -14,10 +13,8 @@ namespace DeskReserve.Data.DBContext.Entity
         public int FloorNumber{ get; set; }
 
         [Required]
-        [DefaultValue(false)]
         public bool HasElevator { get; set; }
 
-        [StringLength(150)]
-        public string FloorCoveringType { get; set; }
+        public string? FloorCoveringType { get; set; }
     }
 }

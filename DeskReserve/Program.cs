@@ -25,8 +25,8 @@ builder.Services.AddCors(options =>
 String connectionString = builder.Configuration["ConnectionStrings:DefaultConnection"];
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connectionString));
 
-builder.Services.AddScoped<FloorService, FloorService>();
-builder.Services.AddScoped<FloorsController, FloorsController>();
+builder.Services.AddScoped<IFloorService, FloorService>();
+builder.Services.AddScoped<IFloorController, FloorController>();
 
 var app = builder.Build();
 

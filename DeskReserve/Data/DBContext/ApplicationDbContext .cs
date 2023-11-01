@@ -9,11 +9,5 @@ namespace DeskReserve.Data.DBContext
         : base(options) { }
 
         public DbSet<Floor> Floors { get; set; }
-
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            optionsBuilder.UseSqlServer("Name=ConnectionStrings:DefaultConnection");
-        }
-
     }
 }
