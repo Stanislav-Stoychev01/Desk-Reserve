@@ -1,8 +1,8 @@
-using DeskReserve.Controllers;
 using DeskReserve.Data.DBContext;
-using DeskReserve.Domain;
+using DeskReserve.Interfaces;
+using DeskReserve.Repository;
+using DeskReserve.Services;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 
 const String CorsDisablePolicy = "AllowAnyOrigin";
 var builder = WebApplication.CreateBuilder(args);
@@ -22,11 +22,15 @@ builder.Services.AddCors(options =>
     });
 });
 
+
+
 String connectionString = builder.Configuration["ConnectionStrings:DefaultConnection"];
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connectionString));
 
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
+builder.Services.AddScoped<IFloorRepository, FloorRepository>();
 builder.Services.AddScoped<IFloorService, FloorService>();
-builder.Services.AddScoped<IFloorController, FloorController>();
 
 var app = builder.Build();
 
