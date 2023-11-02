@@ -1,10 +1,11 @@
 ﻿using DeskReserve.Data.DBContext.Entity;
 using DeskReserve.Data.DBContext;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc;
 
 namespace DeskReserve.Domain
 {
-    public class BuildingService
+    public class BuildingService : IBuildingService
     {
         private readonly ApplicationDbContext _dbContext;
 
@@ -13,19 +14,19 @@ namespace DeskReserve.Domain
             _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
         }
 
-        public async Task<List<Building>> GetAllBuildings()
+        public async Task<List<Building>> GetAll()
         {
             return await _dbContext.Buildings.ToListAsync();
         }
 
-        public async Task<Building> GetBuildingById(Guid id)
+        public async Task<Building> GetOne(Guid id)
         {
             var building = await _dbContext.Buildings.FindAsync(id);
 
             return building;
         }
 
-        public async Task<Building> PostBuilding(Building building)
+        public async Task<Building> NewEntity(Building building)
         {
             _dbContext.Buildings.Add(building);
             await _dbContext.SaveChangesAsync();
@@ -33,7 +34,7 @@ namespace DeskReserve.Domain
             return building;
         }
 
-        public async Task<bool> DeleteBuilding(Guid id)
+        public async Task<bool> Erase(Guid id)
         {
             var building = await _dbContext.Buildings.FindAsync(id);
 
@@ -48,7 +49,7 @@ namespace DeskReserve.Domain
             return true;
         }
 
-        public async Task<bool> UpdateBuilding(Guid id, Building building)
+        public async Task<bool> Update(Guid id, Building building)
         {
             var buildingExist = await _dbContext.Buildings.FindAsync(id);
 
@@ -56,7 +57,7 @@ namespace DeskReserve.Domain
             {
                 return false;
             }
-        
+
             _dbContext.Entry(buildingExist).State = EntityState.Detached;
             _dbContext.Buildings.Update(building);
 

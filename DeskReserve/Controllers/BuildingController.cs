@@ -6,11 +6,11 @@ namespace DeskReserve.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class BuildingController : ControllerBase
+    public class BuildingController : ControllerBase, IBuildingController
     {
-        private readonly BuildingService _buildingService;
+        private readonly IBuildingService _buildingService;
 
-        public BuildingController(BuildingService buildingService)
+        public BuildingController(IBuildingService buildingService)
         {
             _buildingService = buildingService ?? throw new ArgumentNullException(nameof(buildingService));
         }
@@ -18,66 +18,50 @@ namespace DeskReserve.Controllers
         [HttpGet]
         public async Task<ActionResult<List<Building>>> Get()
         {
-            var buildings = await _buildingService.GetAllBuildings();
+            var buildings = await _buildingService.GetAll();
             return buildings;
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Building>> GetId(Guid id)
+        public async Task<ActionResult<Building>> GetById(Guid id)
         {
-            var building = await _buildingService.GetBuildingById(id);
+            var building = await _buildingService.GetOne(id);
 
-            if (building == null)
-            {
-                return NotFound();
-            }
-
-            return building;
+            return building != null ? Ok(building) : NotFound();
         }
 
         [HttpPost]
-        public async Task<ActionResult<Building>> PostBuilding(Building building)
+        public async Task<ActionResult<Building>> Post(Building building)
         {
             if (building == null)
             {
                 return BadRequest();
             }
 
-            var buildingAdd = await _buildingService.PostBuilding(building);
-            return CreatedAtAction(nameof(GetId), new { id = buildingAdd.BuildingId }, buildingAdd);
+            var buildingAdd = await _buildingService.NewEntity(building);
+            //return StatusCode(201, buildingAdd);
+            return buildingAdd;
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteBuilding(Guid id)
+        public async Task<IActionResult> Delete(Guid id)
         {
-            var deletionResult = await _buildingService.DeleteBuilding(id);
+            var deletionResult = await _buildingService.Erase(id);
 
-            if (deletionResult)
-            {
-                return NoContent();
-            }
-            else
-            {
-                return NotFound();
-            }
+            return deletionResult ? NotFound() : NoContent();
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutBuilding(Guid id, Building building)
+        public async Task<IActionResult> Put(Guid id, Building building)
         {
             if (id != building.BuildingId)
             {
                 return BadRequest();
             }
 
-            var result = await _buildingService.UpdateBuilding(id, building);
+            var result = await _buildingService.Update(id, building);
 
-            if (!result)
-            {
-                return NotFound();
-            }
-
-            return NoContent();
+            return result ? NotFound() : NoContent();
         }
     }
 }
