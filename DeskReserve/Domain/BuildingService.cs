@@ -2,68 +2,52 @@
 using DeskReserve.Data.DBContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Principal;
 
 namespace DeskReserve.Domain
 {
     public class BuildingService : IBuildingService
     {
-        private readonly ApplicationDbContext _dbContext;
+        private readonly IRepository _buildingRepository;
 
-        public BuildingService(ApplicationDbContext dbContext)
+        public BuildingService(IRepository buildingRepository)
         {
-            _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
+            _buildingRepository = buildingRepository ?? throw new ArgumentNullException(nameof(buildingRepository));
         }
 
         public async Task<List<Building>> GetAll()
         {
-            return await _dbContext.Buildings.ToListAsync();
+            return await _buildingRepository.GetAllAsync();
         }
 
         public async Task<Building> GetOne(Guid id)
         {
-            var building = await _dbContext.Buildings.FindAsync(id);
-
-            return building;
+            return await _buildingRepository.GetByIdAsync(id);
         }
 
         public async Task<Building> NewEntity(Building building)
         {
-            _dbContext.Buildings.Add(building);
-            await _dbContext.SaveChangesAsync();
-
-            return building;
+            return await _buildingRepository.CreateAsync(building);
         }
 
         public async Task<bool> Erase(Guid id)
         {
-            var building = await _dbContext.Buildings.FindAsync(id);
-
-            if (building == null)
+              var existingBuilding = await _buildingRepository.GetByIdAsync(id);
+            if (existingBuilding == null)
             {
                 return false;
             }
 
-            _dbContext.Buildings.Remove(building);
-            await _dbContext.SaveChangesAsync();
-
-            return true;
+            return await _buildingRepository.DeleteAsync(existingBuilding);
         }
 
-        public async Task<bool> Update(Guid id, Building building)
+        public async Task<bool> Update(Building building)
         {
-            var buildingExist = await _dbContext.Buildings.FindAsync(id);
-
-            if (buildingExist == null)
-            {
-                return false;
-            }
-
-            _dbContext.Entry(buildingExist).State = EntityState.Detached;
-            _dbContext.Buildings.Update(building);
-
-            await _dbContext.SaveChangesAsync();
-
-            return true;
+            return await _buildingRepository.UpdateAsync(building);
         }
     }
 }
+
+
+
+

@@ -10,6 +10,6 @@ namespace DeskReserve.Domain
         Task<Building> GetOne(Guid id);
         Task<Building> NewEntity(Building building);
         Task<bool> Erase(Guid id);
-        Task<bool> Update(Guid id, Building building);
+        Task<bool> Update(Building building);
     }
 }

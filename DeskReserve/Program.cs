@@ -1,5 +1,6 @@
 using DeskReserve.Controllers;
 using DeskReserve.Data.DBContext;
+using DeskReserve.Data.DBContext.Entity;
 using DeskReserve.Domain;
 using Microsoft.EntityFrameworkCore;
 
@@ -25,6 +26,8 @@ builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlSer
 
 builder.Services.AddScoped<IBuildingService, BuildingService>();
 builder.Services.AddScoped<IBuildingController, BuildingController>();
+builder.Services.AddScoped<IRepository, Repository>();
+
 
 var app = builder.Build();
 

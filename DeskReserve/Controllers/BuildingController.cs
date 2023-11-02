@@ -18,50 +18,79 @@ namespace DeskReserve.Controllers
         [HttpGet]
         public async Task<ActionResult<List<Building>>> Get()
         {
-            var buildings = await _buildingService.GetAll();
-            return buildings;
+            return await _buildingService.GetAll(); ;
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<Building>> GetById(Guid id)
         {
-            var building = await _buildingService.GetOne(id);
+            ActionResult result;
 
-            return building != null ? Ok(building) : NotFound();
+            if (Validate.IsNull(id))
+            {
+                result = BadRequest();
+            }
+            else
+            {
+                var building = await _buildingService.GetOne(id);
+                result = building != null ? Ok(building) : NotFound();
+            }
+
+            return result;
         }
 
         [HttpPost]
         public async Task<ActionResult<Building>> Post(Building building)
         {
-            if (building == null)
+            ActionResult result;
+
+            if (Validate.IsNull(building))
             {
-                return BadRequest();
+                result = BadRequest();
+            }
+            else
+            {
+                var buildingAdd = await _buildingService.NewEntity(building);
+                result = StatusCode(201, buildingAdd);
             }
 
-            var buildingAdd = await _buildingService.NewEntity(building);
-            //return StatusCode(201, buildingAdd);
-            return buildingAdd;
+            return result;
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(Guid id)
-        {
-            var deletionResult = await _buildingService.Erase(id);
+         public async Task<IActionResult> Delete(Guid id)
+         {
+            IActionResult result;
 
-            return deletionResult ? NotFound() : NoContent();
-        }
+            if (Validate.IsNull(id))
+            {
+                result = BadRequest();
+            }
+            else
+            {
+                var deletionResult = await _buildingService.Erase(id);
+                result = deletionResult ? Ok() : NotFound();
+            }
+
+            return result;
+         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> Put(Guid id, Building building)
         {
-            if (id != building.BuildingId)
+            IActionResult result;
+
+            if (Validate.IsNull(id) || Validate.IsNull(building) || building.BuildingId != id)
             {
-                return BadRequest();
+                result = BadRequest();
+            }
+            else
+            {
+                var updateResult = await _buildingService.Update(building);
+                result = updateResult ? Ok() : NotFound();
             }
 
-            var result = await _buildingService.Update(id, building);
-
-            return result ? NotFound() : NoContent();
+            return result;
         }
     }
 }
