@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using DeskReserve.Interfaces;
 using DeskReserve.Domain;
+using DeskReserve.Data.DBContext.Entity;
 
 namespace DeskReserve.Controllers
 {
@@ -12,16 +13,17 @@ namespace DeskReserve.Controllers
 
         public FloorController(IFloorService service)
         {
-            _service = service;
+            _service = service ?? throw new ArgumentNullException(nameof(service));
         }
 
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<IEnumerable<FloorDto>>> Get()
+        public async Task<ActionResult<IEnumerable<Floor>>> Get()
         {
-            var entities = await _service.GetAllAsync();
-            return entities != null ? Ok(entities) : NotFound();
+            var floors = await _service.GetAllAsync();
+
+            return floors != null ? Ok(floors) : NotFound();
         }
 
         [HttpGet("{id}")]
@@ -29,22 +31,24 @@ namespace DeskReserve.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<FloorDto>> Get(Guid id)
         {
-            var entity = await _service.GetOneAsync(id);
+            var floor = await _service.GetOneAsync(id);
 
-            return entity != null ? Ok(entity) : NotFound();
+            return floor != null ? Ok(floor) : NotFound();
         }
 
         [HttpPut("{id}/edit")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Put(Guid id, FloorDto floor)
         {
-            await _service.UpdateOneAsync(id, floor);
+            var success = await _service.UpdateOneAsync(id, floor);
 
-            return NoContent();
+            return success ? NoContent() : StatusCode(StatusCodes.Status500InternalServerError);
         }
 
         [HttpPost("new")]
         [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<FloorDto>> Post(FloorDto floor)
         {
             var success = await _service.CreateOneAsync(floor);
