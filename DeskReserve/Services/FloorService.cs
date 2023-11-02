@@ -23,29 +23,30 @@ namespace DeskReserve.Services
 
         public async Task<FloorDto> GetOneAsync(Guid id)
         {
-            var entity = await _repository.GetById(id);
-            var floor = _mapper.Map<Floor, FloorDto>(entity);
+            var floorEntity = await _repository.GetById(id);
 
-            return floor;
+            var floorDto = _mapper.Map<Floor, FloorDto>(floorEntity);
+
+            return floorDto;
         }
 
         public async Task<bool> UpdateOneAsync(Guid id, FloorDto floorDto)
         {
-            var floor = _mapper.Map<Floor>(await _repository.GetById(id));
+            var floorEntity = _mapper.Map<Floor>(await _repository.GetById(id));
 
-            if (floor == null)
+            if (floorEntity == null)
             {
                 return false;
             }
 
-            CopyProperties(floorDto, floor);
+            CopyProperties(floorDto, floorEntity);
 
-            return await _repository.Update(floor);
+            return await _repository.Update(floorEntity);
         }
 
-        public async Task<bool> CreateOneAsync(FloorDto floor)
+        public async Task<bool> CreateOneAsync(FloorDto floorDto)
         {
-            var floorEntity = _mapper.Map<Floor>(floor);
+            var floorEntity = _mapper.Map<Floor>(floorDto);
 
             var success = await _repository.Add(floorEntity);
 
@@ -54,9 +55,9 @@ namespace DeskReserve.Services
 
         public async Task<bool> DeleteOneAsync(Guid id)
         {
-            var floor = await _repository.GetById(id);
+            var floorEntity = await _repository.GetById(id);
 
-            if (floor == null)
+            if (floorEntity == null)
             {
                 return false;
             }
