@@ -28,39 +28,39 @@ namespace DeskReserve.Repository
         {
             await _context.Floor.AddAsync(floor);
 
-            var saved = await _context.SaveChangesAsync();
-
-            return saved > 0 ? true : false;
+            return await _context.SaveChangesAsync() > 0;
         }
 
         public async Task<bool> Update(Floor floor)
         {
-            _context.Entry(floor).State = EntityState.Modified;
+            var floorEntity = await _context.Floor.FindAsync(floor.FloorId);
 
-            try
-            {
-                await _context.SaveChangesAsync();
-                return true;
-            }
-            catch (DbUpdateConcurrencyException)
+            if (ReferenceEquals(floorEntity, null))
             {
                 return false;
             }
+            else
+            {
+                _context.Entry(floorEntity).State = EntityState.Detached;
+            }
+
+            _context.Entry(floor).State = EntityState.Modified;
+
+            return await _context.SaveChangesAsync() > 0;
         }
 
         public async Task<bool> Delete(Guid id)
         {
             var floor = await _context.Floor.FindAsync(id);
 
-            if (floor == null)
+            if (ReferenceEquals(floor, null))
             {
                 return false;
             }
 
             _context.Floor.Remove(floor);
-            var saved = await _context.SaveChangesAsync();
 
-            return saved > 0 ? true : false;
+            return await _context.SaveChangesAsync() > 0;
         }
     }
 }

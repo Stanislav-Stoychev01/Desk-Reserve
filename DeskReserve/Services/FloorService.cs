@@ -1,6 +1,7 @@
 ﻿using DeskReserve.Data.DBContext.Entity;
 using DeskReserve.Interfaces;
 using DeskReserve.Domain;
+using DeskReserve.Helper;
 
 namespace DeskReserve.Services
 {
@@ -25,7 +26,6 @@ namespace DeskReserve.Services
             var floorEntity = await _repository.GetById(id);
 
             var floorDto = new FloorDto();
-
             floorDto = _mapper.MapProperties(floorEntity, floorDto);
 
             return floorDto;
@@ -33,13 +33,10 @@ namespace DeskReserve.Services
 
         public async Task<bool> UpdateOneAsync(Guid id, FloorDto floorDto)
         {
-            var floorEntity = await _repository.GetById(id);
-
-            if (floorEntity == null)
+            var floorEntity = new Floor()
             {
-                return false;
-            }
-
+                FloorId = id,
+            };
             floorEntity = _mapper.MapProperties(floorDto, floorEntity);
 
             return await _repository.Update(floorEntity);
@@ -50,22 +47,12 @@ namespace DeskReserve.Services
             var floorEntity = new Floor();
             floorEntity = _mapper.MapProperties(floorDto, floorEntity);
 
-            var success = await _repository.Add(floorEntity);
-
-            return success ? true : false;
+            return await _repository.Add(floorEntity);
         }
 
         public async Task<bool> DeleteOneAsync(Guid id)
         {
-            var floorEntity = await _repository.GetById(id);
-
-            if (floorEntity == null)
-            {
-                return false;
-            }
-
-            var success = await _repository.Delete(id);
-            return success ? true : false;
+            return await _repository.Delete(id);
         }
     }
 }
