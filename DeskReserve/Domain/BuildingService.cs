@@ -1,8 +1,5 @@
 ﻿using DeskReserve.Data.DBContext.Entity;
-using DeskReserve.Data.DBContext;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Mvc;
-using System.Security.Principal;
+
 
 namespace DeskReserve.Domain
 {
@@ -25,25 +22,71 @@ namespace DeskReserve.Domain
             return await _buildingRepository.GetByIdAsync(id);
         }
 
-        public async Task<Building> NewEntity(Building building)
+        public async Task<Building> NewEntity(BuildingDto building)
         {
-            return await _buildingRepository.CreateAsync(building);
+            var newBuilding = UpgradeDto(building);
+            return await _buildingRepository.CreateAsync(newBuilding);
         }
 
         public async Task<bool> Erase(Guid id)
         {
-              var existingBuilding = await _buildingRepository.GetByIdAsync(id);
-            if (existingBuilding == null)
+            bool result;
+            var existingBuilding = await _buildingRepository.GetByIdAsync(id);
+
+            if (Object.Equals(existingBuilding, null))
             {
-                return false;
+                result = false;
+            }
+            else
+            {
+                result = await _buildingRepository.DeleteAsync(existingBuilding); ;
             }
 
-            return await _buildingRepository.DeleteAsync(existingBuilding);
+            return result;
         }
 
-        public async Task<bool> Update(Building building)
+        public async Task<bool> Update(Guid id, BuildingDto building)
         {
-            return await _buildingRepository.UpdateAsync(building);
+            bool result;
+            var existingBuilding = await _buildingRepository.GetByIdAsync(id);
+
+            if (Object.Equals(existingBuilding, null))
+            {
+                result = false;
+            }
+            else
+            {
+                var updateBuilding = UpgradeDto(id, building);
+                result = await _buildingRepository.UpdateAsync(updateBuilding);
+            }
+
+            return result;
+        }
+
+        public Building UpgradeDto(BuildingDto buildingDto)
+        {
+            var building = new Building
+            {
+                BuildingId = Guid.NewGuid(),
+                City = buildingDto.City,
+                StreetAddress = buildingDto.StreetAddress,
+                Neighbourhood = buildingDto.Neighbourhood,
+                Floors = buildingDto.Floors
+            };
+            return building;
+        }
+
+        public Building UpgradeDto(Guid id,BuildingDto buildingDto)
+        {
+            var building = new Building
+            {
+                BuildingId = id,
+                City = buildingDto.City,
+                StreetAddress = buildingDto.StreetAddress,
+                Neighbourhood = buildingDto.Neighbourhood,
+                Floors = buildingDto.Floors
+            };
+            return building;
         }
     }
 }

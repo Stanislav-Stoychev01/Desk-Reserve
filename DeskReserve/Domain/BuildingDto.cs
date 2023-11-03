@@ -1,15 +1,10 @@
-﻿using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel;
 
-namespace DeskReserve.Data.DBContext.Entity
+namespace DeskReserve.Domain
 {
-    [Table("building")]
-    public class Building 
+    public class BuildingDto
     {
-        [Key]
-        public Guid BuildingId { get; set; }
-
         [Required(ErrorMessage = "City is required.")]
         [StringLength(85, ErrorMessage = "City cannot exceed 85 characters.")]
         public string City { get; set; }
@@ -25,6 +20,5 @@ namespace DeskReserve.Data.DBContext.Entity
         [Required(ErrorMessage = "Floors are required.")]
         [DefaultValue(1)]
         public int Floors { get; set; }
-
     }
 }

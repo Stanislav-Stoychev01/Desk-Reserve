@@ -1,4 +1,5 @@
 ﻿using DeskReserve.Data.DBContext.Entity;
+using DeskReserve.Domain;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DeskReserve.Controllers
@@ -9,10 +10,10 @@ namespace DeskReserve.Controllers
 
         Task<ActionResult<Building>> GetById(Guid id);
 
-        Task<ActionResult<Building>> Post(Building building);
+        Task<ActionResult<Building>> Post(BuildingDto building);
 
         Task<IActionResult> Delete(Guid id);
 
-        Task<IActionResult> Put(Guid id, Building building);
+        Task<IActionResult> Put(Guid id, BuildingDto building);
     }
 }

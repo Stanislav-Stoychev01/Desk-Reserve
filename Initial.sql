@@ -12,3 +12,5 @@ CREATE TABLE [building] (
 );
 
 ALTER TABLE [building] ADD	CONSTRAINT PK_building PRIMARY KEY([BuildingId]);
+
+DELETE FROM building;
