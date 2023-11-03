@@ -1,7 +1,6 @@
 ﻿using DeskReserve.Data.DBContext.Entity;
 using DeskReserve.Interfaces;
 using DeskReserve.Domain;
-using AutoMapper;
 
 namespace DeskReserve.Services
 {
@@ -25,28 +24,31 @@ namespace DeskReserve.Services
         {
             var floorEntity = await _repository.GetById(id);
 
-            var floorDto = _mapper.Map<Floor, FloorDto>(floorEntity);
+            var floorDto = new FloorDto();
+
+            floorDto = _mapper.MapProperties(floorEntity, floorDto);
 
             return floorDto;
         }
 
         public async Task<bool> UpdateOneAsync(Guid id, FloorDto floorDto)
         {
-            var floorEntity = _mapper.Map<Floor>(await _repository.GetById(id));
+            var floorEntity = await _repository.GetById(id);
 
             if (floorEntity == null)
             {
                 return false;
             }
 
-            CopyProperties(floorDto, floorEntity);
+            floorEntity = _mapper.MapProperties(floorDto, floorEntity);
 
             return await _repository.Update(floorEntity);
         }
 
         public async Task<bool> CreateOneAsync(FloorDto floorDto)
         {
-            var floorEntity = _mapper.Map<Floor>(floorDto);
+            var floorEntity = new Floor();
+            floorEntity = _mapper.MapProperties(floorDto, floorEntity);
 
             var success = await _repository.Add(floorEntity);
 
@@ -64,21 +66,6 @@ namespace DeskReserve.Services
 
             var success = await _repository.Delete(id);
             return success ? true : false;
-        }
-
-        public static void CopyProperties(object source, object destination)
-        {
-            var sourceProperties = source.GetType().GetProperties();
-            var destinationProperties = destination.GetType().GetProperties();
-
-            foreach (var sourceProperty in sourceProperties)
-            {
-                var destinationProperty = destinationProperties.FirstOrDefault(x => x.Name == sourceProperty.Name);
-                if (destinationProperty != null && destinationProperty.PropertyType == sourceProperty.PropertyType)
-                {
-                    destinationProperty.SetValue(destination, sourceProperty.GetValue(source));
-                }
-            }
         }
     }
 }
