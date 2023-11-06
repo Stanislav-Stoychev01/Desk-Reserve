@@ -18,8 +18,19 @@ namespace DeskReserve.Controllers
         [HttpGet]
         public async Task<ActionResult<List<Building>>> Get()
         {
+            ActionResult result;
             var buildings = await _buildingService.GetAll();
-            return !Object.Equals(buildings, null) ? Ok(buildings) : NotFound();
+
+            if (buildings == null || buildings.Count == 0)
+            {
+                result = NotFound();
+            }
+            else
+            {
+                result = Ok(buildings);
+            }
+
+            return result;
         }
 
         [HttpGet("{id}")]
@@ -32,9 +43,9 @@ namespace DeskReserve.Controllers
         [HttpPost]
         public async Task<ActionResult<Building>> Post(BuildingDto building)
         {
-            var buildingAdd = await _buildingService.NewEntity(building);
+            var buildingIsAdded = await _buildingService.NewEntity(building);
 
-            return !Object.Equals(buildingAdd, null) ? StatusCode(201, buildingAdd) : StatusCode(500);
+            return buildingIsAdded ? StatusCode(201) : StatusCode(500);
         }
 
         [HttpDelete("{id}")]
@@ -50,7 +61,7 @@ namespace DeskReserve.Controllers
         {
             var updateResult = await _buildingService.Update(id, building);
 
-            return updateResult ? Ok() : NotFound();
+            return updateResult ? Ok() : StatusCode(500);
         }
     }
 }

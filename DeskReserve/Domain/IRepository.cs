@@ -6,7 +6,7 @@ namespace DeskReserve.Domain
     {
         Task<List<Building>> GetAllAsync();
         Task<Building> GetByIdAsync(Guid id);
-        Task<Building> CreateAsync(Building newBuilding);
+        Task<bool> CreateAsync(Building newBuilding);
         Task<bool> DeleteAsync(Building toDelete);
         Task<bool> UpdateAsync(Building toUpdate);
     }

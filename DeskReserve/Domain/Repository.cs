@@ -25,24 +25,24 @@ namespace DeskReserve.Domain
             return await _dbContext.Buildings.FindAsync(id);
         }
 
-        public async Task<Building> CreateAsync(Building newBuilding)
+        public async Task<bool> CreateAsync(Building newBuilding)
         {
             _dbContext.Buildings.Add(newBuilding);
-            await _dbContext.SaveChangesAsync();
-            return newBuilding;
+            
+            return await _dbContext.SaveChangesAsync() > 0;
         }
 
         public async Task<bool> DeleteAsync(Building toDelete)
         {
             _dbContext.Buildings.Remove(toDelete);
             await _dbContext.SaveChangesAsync();
+
             return true;
         }
 
         public async Task<bool> UpdateAsync(Building toUpdate)
         {
             _dbContext.Entry(toUpdate).State = EntityState.Modified;
-
             await _dbContext.SaveChangesAsync();
 
             return true;

@@ -22,7 +22,7 @@ namespace DeskReserve.Domain
             return await _buildingRepository.GetByIdAsync(id);
         }
 
-        public async Task<Building> NewEntity(BuildingDto building)
+        public async Task<bool> NewEntity(BuildingDto building)
         {
             var newBuilding = UpgradeDto(building);
             return await _buildingRepository.CreateAsync(newBuilding);
@@ -73,6 +73,7 @@ namespace DeskReserve.Domain
                 Neighbourhood = buildingDto.Neighbourhood,
                 Floors = buildingDto.Floors
             };
+
             return building;
         }
 
@@ -86,6 +87,7 @@ namespace DeskReserve.Domain
                 Neighbourhood = buildingDto.Neighbourhood,
                 Floors = buildingDto.Floors
             };
+
             return building;
         }
     }
