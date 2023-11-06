@@ -11,13 +11,17 @@ namespace DeskReserve.Tests.Controllers
     public class BuildingControllerTests
     {
         private BuildingController _buildingController;
+        private BuildingService _buildingService;
         private Mock<IBuildingService> _buildingServiceMock;
+        private Mock<IRepository> _buildingRepositoryMock;
 
         [SetUp]
         public void Setup()
         {
             _buildingServiceMock = new Mock<IBuildingService>();
+            _buildingRepositoryMock = new Mock<IRepository>();
             _buildingController = new BuildingController(_buildingServiceMock.Object);
+            _buildingService = new BuildingService(_buildingRepositoryMock.Object);
         }
 
         [Test]
@@ -203,6 +207,49 @@ namespace DeskReserve.Tests.Controllers
 
             var errorResult = (StatusCodeResult)result;
             Assert.AreEqual(500, errorResult.StatusCode);
+        }
+
+        [Test]
+        public void UpgradeDto_WithNewGuid_ReturnsBuildingWithNewGuid()
+        {
+            var buildingDto = new BuildingDto
+            {
+                City = "City1",
+                StreetAddress = "StreetAddress1",
+                Neighbourhood = "Neighbourhood1",
+                Floors = 1
+            };
+
+            var result = _buildingService.UpgradeDto(buildingDto);
+
+            Assert.IsNotNull(result);
+            Assert.AreNotEqual(Guid.Empty, result.BuildingId);
+            Assert.AreEqual(buildingDto.City, result.City);
+            Assert.AreEqual(buildingDto.StreetAddress, result.StreetAddress);
+            Assert.AreEqual(buildingDto.Neighbourhood, result.Neighbourhood);
+            Assert.AreEqual(buildingDto.Floors, result.Floors);
+        }
+
+        [Test]
+        public void UpgradeDto_WithGivenGuid_ReturnsBuildingWithGivenGuid()
+        {
+            var id = Guid.NewGuid();
+            var buildingDto = new BuildingDto
+            {
+                City = "City1",
+                StreetAddress = "StreetAddress1",
+                Neighbourhood = "Neighbourhood1",
+                Floors = 1
+            };
+
+            var result = _buildingService.UpgradeDto(id, buildingDto);
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(id, result.BuildingId);
+            Assert.AreEqual(buildingDto.City, result.City);
+            Assert.AreEqual(buildingDto.StreetAddress, result.StreetAddress);
+            Assert.AreEqual(buildingDto.Neighbourhood, result.Neighbourhood);
+            Assert.AreEqual(buildingDto.Floors, result.Floors);
         }
 
     }
