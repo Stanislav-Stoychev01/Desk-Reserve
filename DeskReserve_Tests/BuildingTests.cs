@@ -188,7 +188,7 @@ namespace DeskReserve.Tests.Controllers
         }
 
         [Test]
-        public async Task Put_ReturnsNotFoundWhenBuildingNotFound()
+        public async Task PutReturnsNotFound()
         {
             var id = new Guid("3fa85f64-5717-4562-b3fc-2c963f66afa7");
 
@@ -210,7 +210,7 @@ namespace DeskReserve.Tests.Controllers
         }
 
         [Test]
-        public void UpgradeDto_WithNewGuid_ReturnsBuildingWithNewGuid()
+        public void UpgradeDto()
         {
             var buildingDto = new BuildingDto
             {
@@ -231,7 +231,7 @@ namespace DeskReserve.Tests.Controllers
         }
 
         [Test]
-        public void UpgradeDto_WithGivenGuid_ReturnsBuildingWithGivenGuid()
+        public void UpgradeDtoWithId()
         {
             var id = Guid.NewGuid();
             var buildingDto = new BuildingDto
@@ -252,5 +252,107 @@ namespace DeskReserve.Tests.Controllers
             Assert.AreEqual(buildingDto.Floors, result.Floors);
         }
 
+       /* [Test]
+        public async Task NewEntityReturnsTrue()
+        {
+            var buildingDto = new BuildingDto
+            {
+                City = "City1",
+                StreetAddress = "StreetAddress1",
+                Neighbourhood = "Neighbourhood1",
+                Floors = 1
+            };
+
+            var newBuilding = new Building
+            {
+                BuildingId = new Guid("3fa85f64-5717-4562-b3fc-2c963f66afa7"),
+                City = "City1",
+                StreetAddress = "StreetAddress1",
+                Neighbourhood = "Neighbourhood1",
+                Floors = 1
+            };
+
+            _buildingRepositoryMock.Setup(repo => repo.CreateAsync(newBuilding)).ReturnsAsync(true);
+
+            var result = await _buildingService.NewEntity(buildingDto);
+            Assert.AreEqual(result,true);
+        }
+       */
+        [Test]
+        public async Task EraseReturnsTrue()
+        {
+            var guid = new Guid("3fa85f64-5717-4562-b3fc-2c963f66afa7");
+
+            var existingBuilding = new Building
+            {
+                BuildingId = guid,
+                City = "City1",
+                StreetAddress = "StreetAddress1",
+                Neighbourhood = "Neighbourhood1",
+                Floors = 1
+            };
+
+            _buildingRepositoryMock.Setup(repo => repo.GetByIdAsync(guid)).ReturnsAsync(existingBuilding);
+            _buildingRepositoryMock.Setup(repo => repo.DeleteAsync(existingBuilding)).ReturnsAsync(true);
+
+            var result = await _buildingService.Erase(existingBuilding.BuildingId);
+
+            Assert.AreEqual(result,true);
+        }
+
+        [Test]
+        public async Task EraseReturnsFalse()
+        {
+            var guid = new Guid("3fa85f64-5717-4562-b3fc-2c963f66afa7");
+
+            _buildingRepositoryMock.Setup(repo => repo.GetByIdAsync(guid)).ReturnsAsync((Building)null);
+
+            var result = await _buildingService.Erase(guid);
+
+            Assert.AreEqual(result, false);
+        }
+
+        /*[Test]
+        public async Task UpdateReturnsTrue()
+        {
+            var guid = new Guid("3fa85f64-5717-4562-b3fc-2c963f66afa7");
+
+            var existingBuilding = new Building
+            {
+                BuildingId = guid,
+                City = "City1",
+                StreetAddress = "StreetAddress1",
+                Neighbourhood = "Neighbourhood1",
+                Floors = 1
+            };
+
+            var updatedDto = new BuildingDto
+            {
+                City = "City12",
+                StreetAddress = "StreetAddress12",
+                Neighbourhood = "Neighbourhood12",
+                Floors = 12
+            };
+
+            var newBuilding = _buildingService.UpgradeDto(existingBuilding.BuildingId, updatedDto);
+
+            _buildingRepositoryMock.Setup(repo => repo.GetByIdAsync(guid)).ReturnsAsync(existingBuilding);
+            _buildingRepositoryMock.Setup(repo => repo.UpdateAsync(newBuilding)).ReturnsAsync(true);
+
+            var result = await _buildingService.Update(existingBuilding.BuildingId, updatedDto);
+
+            Assert.AreEqual(result, true);
+        }*/
+
+        [Test]
+        public async Task UpdateReturnsFalse()
+        {
+            _buildingRepositoryMock.Setup(repo => repo.GetByIdAsync(It.IsAny<Guid>())).ReturnsAsync((Building)null);
+
+            var result = await _buildingService.Update(Guid.NewGuid(), new BuildingDto());
+
+
+            Assert.AreEqual(result,false);
+        }
     }
 }

@@ -35,17 +35,17 @@ namespace DeskReserve.Domain
         public async Task<bool> DeleteAsync(Building toDelete)
         {
             _dbContext.Buildings.Remove(toDelete);
-            await _dbContext.SaveChangesAsync();
 
-            return true;
+            return await _dbContext.SaveChangesAsync() > 0;
         }
 
         public async Task<bool> UpdateAsync(Building toUpdate)
         {
+            var buildingItem = await _dbContext.Buildings.FindAsync(toUpdate.BuildingId);
+            _dbContext.Entry(buildingItem).State = EntityState.Detached;
             _dbContext.Entry(toUpdate).State = EntityState.Modified;
-            await _dbContext.SaveChangesAsync();
 
-            return true;
+            return await _dbContext.SaveChangesAsync() > 0;
         }
     }
 }
