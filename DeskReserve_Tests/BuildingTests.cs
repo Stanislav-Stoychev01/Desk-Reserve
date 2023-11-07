@@ -105,8 +105,8 @@ namespace DeskReserve.Tests.Controllers
             var buildingDto = new BuildingDto
             {
                 City = "City1",
-                StreetAddress = "Street 1",
-                Neighbourhood = "Neighbourhood 1",
+                StreetAddress = "Street1",
+                Neighbourhood = "Neighbourhood1",
                 Floors = 1
             };
 
@@ -125,8 +125,8 @@ namespace DeskReserve.Tests.Controllers
             var buildingDto = new BuildingDto
             {
                 City = "City1",
-                StreetAddress = "Street 1",
-                Neighbourhood = "Neighbourhood 1",
+                StreetAddress = "Street1",
+                Neighbourhood = "Neighbourhood1",
                 Floors = 1
             };
 
@@ -234,6 +234,7 @@ namespace DeskReserve.Tests.Controllers
         public void UpgradeDtoWithId()
         {
             var id = Guid.NewGuid();
+
             var buildingDto = new BuildingDto
             {
                 City = "City1",
@@ -252,8 +253,30 @@ namespace DeskReserve.Tests.Controllers
             Assert.AreEqual(buildingDto.Floors, result.Floors);
         }
 
-       /* [Test]
+        [Test]
         public async Task NewEntityReturnsTrue()
+        {
+            var buildingDto = new BuildingDto
+            {
+                City = "City1",
+                StreetAddress = "StreetAddress1",
+                Neighbourhood = "Neighbourhood1",
+                Floors = 1
+            };
+
+            _buildingRepositoryMock.Setup(repo => repo.CreateAsync(It.Is<Building>(b =>
+                                          b.City == buildingDto.City &&
+                                          b.StreetAddress == buildingDto.StreetAddress &&
+                                          b.Neighbourhood == buildingDto.Neighbourhood &&
+                                          b.Floors == buildingDto.Floors)))
+                                          .ReturnsAsync(true);
+
+            var result = await _buildingService.NewEntity(buildingDto);
+            Assert.IsTrue(result);
+        }
+
+        [Test]
+        public async Task NewEntityReturnsFalse()
         {
             var buildingDto = new BuildingDto
             {
@@ -272,48 +295,46 @@ namespace DeskReserve.Tests.Controllers
                 Floors = 1
             };
 
-            _buildingRepositoryMock.Setup(repo => repo.CreateAsync(newBuilding)).ReturnsAsync(true);
-
+            _buildingRepositoryMock.Setup(repo => repo.CreateAsync(newBuilding)).ReturnsAsync(false);
             var result = await _buildingService.NewEntity(buildingDto);
-            Assert.AreEqual(result,true);
-        }
-       */
-        [Test]
-        public async Task EraseReturnsTrue()
-        {
-            var guid = new Guid("3fa85f64-5717-4562-b3fc-2c963f66afa7");
 
-            var existingBuilding = new Building
-            {
-                BuildingId = guid,
-                City = "City1",
-                StreetAddress = "StreetAddress1",
-                Neighbourhood = "Neighbourhood1",
-                Floors = 1
-            };
-
-            _buildingRepositoryMock.Setup(repo => repo.GetByIdAsync(guid)).ReturnsAsync(existingBuilding);
-            _buildingRepositoryMock.Setup(repo => repo.DeleteAsync(existingBuilding)).ReturnsAsync(true);
-
-            var result = await _buildingService.Erase(existingBuilding.BuildingId);
-
-            Assert.AreEqual(result,true);
+            Assert.IsFalse(result);
         }
 
         [Test]
-        public async Task EraseReturnsFalse()
-        {
-            var guid = new Guid("3fa85f64-5717-4562-b3fc-2c963f66afa7");
+         public async Task EraseReturnsTrue()
+         {
+             var guid = new Guid("3fa85f64-5717-4562-b3fc-2c963f66afa7");
 
-            _buildingRepositoryMock.Setup(repo => repo.GetByIdAsync(guid)).ReturnsAsync((Building)null);
+             var existingBuilding = new Building
+             {
+                 BuildingId = guid,
+                 City = "City1",
+                 StreetAddress = "StreetAddress1",
+                 Neighbourhood = "Neighbourhood1",
+                 Floors = 1
+             };
 
-            var result = await _buildingService.Erase(guid);
+             _buildingRepositoryMock.Setup(repo => repo.GetByIdAsync(guid)).ReturnsAsync(existingBuilding);
+             _buildingRepositoryMock.Setup(repo => repo.DeleteAsync(existingBuilding)).ReturnsAsync(true);
 
-            Assert.AreEqual(result, false);
-        }
+             var result = await _buildingService.Erase(existingBuilding.BuildingId);
+             Assert.IsTrue(result);
+         }
 
-        /*[Test]
-        public async Task UpdateReturnsTrue()
+         [Test]
+         public async Task EraseReturnsFalse()
+         {
+             var guid = new Guid("3fa85f64-5717-4562-b3fc-2c963f66afa7");
+
+             _buildingRepositoryMock.Setup(repo => repo.GetByIdAsync(guid)).ReturnsAsync((Building)null);
+             var result = await _buildingService.Erase(guid);
+
+             Assert.IsFalse(result);
+         }
+
+        [Test]
+        public async Task UpdateReturnsTrue2()
         {
             var guid = new Guid("3fa85f64-5717-4562-b3fc-2c963f66afa7");
 
@@ -334,25 +355,21 @@ namespace DeskReserve.Tests.Controllers
                 Floors = 12
             };
 
-            var newBuilding = _buildingService.UpgradeDto(existingBuilding.BuildingId, updatedDto);
-
             _buildingRepositoryMock.Setup(repo => repo.GetByIdAsync(guid)).ReturnsAsync(existingBuilding);
-            _buildingRepositoryMock.Setup(repo => repo.UpdateAsync(newBuilding)).ReturnsAsync(true);
+            _buildingRepositoryMock.Setup(repo => repo.UpdateAsync(It.IsAny<Building>())).ReturnsAsync(true);
 
-            var result = await _buildingService.Update(existingBuilding.BuildingId, updatedDto);
+            var result = await _buildingService.Update(guid, updatedDto);
 
-            Assert.AreEqual(result, true);
-        }*/
-
-        [Test]
-        public async Task UpdateReturnsFalse()
-        {
-            _buildingRepositoryMock.Setup(repo => repo.GetByIdAsync(It.IsAny<Guid>())).ReturnsAsync((Building)null);
-
-            var result = await _buildingService.Update(Guid.NewGuid(), new BuildingDto());
-
-
-            Assert.AreEqual(result,false);
+            Assert.IsTrue(result);
         }
+        
+        [Test]
+         public async Task UpdateReturnsFalse()
+         {
+             _buildingRepositoryMock.Setup(repo => repo.GetByIdAsync(It.IsAny<Guid>())).ReturnsAsync((Building)null);
+             var result = await _buildingService.Update(Guid.NewGuid(), new BuildingDto());
+
+             Assert.IsFalse(result);
+         }
     }
 }
