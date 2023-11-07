@@ -1,10 +1,14 @@
-﻿namespace DeskReserve.Data.DBContext.Entity
+﻿using Microsoft.AspNetCore.Identity;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace DeskReserve.Data.DBContext.Entity
 {
-    public class User
+    [Table("User")]
+    public class User : IdentityUser
     {
         public Guid UserId { get; set; }
 
-        public string Username { get; set; }
+        public string UserName { get; set; }
 
         public string Email { get; set; }
 
