@@ -8,7 +8,7 @@ namespace DeskReserve.Data.DBContext
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) 
         : base(options) { }
 
-        public DbSet<Dog> Dogs { get; set; }
+        public DbSet<User> User { get; set; }
 
     }
 }
