@@ -23,7 +23,7 @@ namespace DeskReserve.Controllers
         {
             var floors = await _service.GetAllAsync();
 
-            return floors != null ? Ok(floors) : NotFound();
+            return !ReferenceEquals(floors, null) ? Ok(floors) : NotFound();
         }
 
         [HttpGet("{id}")]
@@ -33,7 +33,7 @@ namespace DeskReserve.Controllers
         {
             var floor = await _service.GetOneAsync(id);
 
-            return floor != null ? Ok(floor) : NotFound();
+            return !ReferenceEquals(floor, null) ? Ok(floor) : NotFound();
         }
 
         [HttpPut("{id}/edit")]

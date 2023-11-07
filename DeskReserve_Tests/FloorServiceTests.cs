@@ -2,15 +2,14 @@
 using DeskReserve.Domain;
 using DeskReserve.Interfaces;
 using DeskReserve.Services;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 
 namespace Desk_Reserve.Tests
 {
-    [TestClass]
+    [TestFixture]
     public class FloorServiceTests
     {
-        [TestMethod]
+        [Test]
         public async Task GetAllAsync_ReturnsAllFloors()
         {
             var repositoryMock = new Mock<IFloorRepository>();
@@ -25,7 +24,7 @@ namespace Desk_Reserve.Tests
             Assert.AreEqual(0, floors.Count());
         }
 
-        [TestMethod]
+        [Test]
         public async Task GetOneAsync_ValidId_ReturnsFloorDto()
         {
             Guid id = Guid.NewGuid();
@@ -46,11 +45,11 @@ namespace Desk_Reserve.Tests
 
             var result = await floorService.GetOneAsync(id);
 
-            Assert.IsInstanceOfType<FloorDto>(result);
+            Assert.IsInstanceOf<FloorDto>(result);
             Assert.IsNotNull(result);
         }
 
-        [TestMethod]
+        [Test]
         public async Task GetOneAsync_InvalidId_ReturnsNull()
         {
             Guid id = Guid.NewGuid();
@@ -67,7 +66,7 @@ namespace Desk_Reserve.Tests
             Assert.IsNull(result);
         }
 
-        [TestMethod]
+        [Test]
         public async Task UpdateOneAsync_ValidIdAndDto_ReturnsTrue()
         {
             Guid id = Guid.NewGuid();
@@ -97,7 +96,7 @@ namespace Desk_Reserve.Tests
             Assert.IsTrue(result); 
         }
 
-        [TestMethod]
+        [Test]
         public async Task DeleteOneAsync_ValidId_ReturnsTrue()
         {
             Guid id = Guid.NewGuid();
@@ -113,7 +112,7 @@ namespace Desk_Reserve.Tests
             Assert.IsTrue(result);
         }
 
-        [TestMethod]
+        [Test]
         public async Task DeleteOneAsync_InvalidId_ReturnsFalse()
         {
             var id = Guid.NewGuid();

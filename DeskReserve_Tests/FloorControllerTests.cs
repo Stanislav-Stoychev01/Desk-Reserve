@@ -1,20 +1,18 @@
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
+using NUnit.Framework;
 using DeskReserve.Controllers;
 using DeskReserve.Interfaces;
 using DeskReserve.Data.DBContext.Entity;
 using DeskReserve.Domain;
-using DeskReserve.Data.DBContext;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Http;
 
 namespace Desk_Reserve.Tests
 {
-    [TestClass]
+    [TestFixture]
     public class FloorControllerTests
     {
-        [TestMethod]
+        [Test]
         public async Task Get_ReturnsOkWithFloors()
         {
             var mockService = new Mock<IFloorService>();
@@ -32,11 +30,11 @@ namespace Desk_Reserve.Tests
             var okObjectResult = result.Result as OkObjectResult;
 
             Assert.IsNotNull(okObjectResult.Value);
-            Assert.IsInstanceOfType<OkObjectResult>(result.Result);
-            Assert.IsInstanceOfType<IEnumerable<Floor>>(okObjectResult.Value);
+            Assert.IsInstanceOf<OkObjectResult>(result.Result);
+            Assert.IsInstanceOf<IEnumerable<Floor>>(okObjectResult.Value);
         }
 
-        [TestMethod]
+        [Test]
         public async Task Get_ReturnsNotFoundWhenNoFloors()
         {
             var mockService = new Mock<IFloorService>();
@@ -47,11 +45,11 @@ namespace Desk_Reserve.Tests
             var result = await controller.Get();
             var resultStatusCode = result.Result as NotFoundResult;
 
-            Assert.IsInstanceOfType<NotFoundResult>(result.Result);
+            Assert.IsInstanceOf<NotFoundResult>(result.Result);
             Assert.AreEqual(StatusCodes.Status404NotFound, resultStatusCode.StatusCode);
         }
 
-        [TestMethod]
+        [Test]
         public async Task Get_ReturnsOkObjectResultWhenFloorExists()
         {
             var id = Guid.NewGuid();
@@ -66,11 +64,11 @@ namespace Desk_Reserve.Tests
             var result = await controller.Get(id);
             var okObjectResult = result.Result as OkObjectResult;
 
-            Assert.IsInstanceOfType<OkObjectResult>(result.Result);
-            Assert.IsInstanceOfType<FloorDto>(okObjectResult.Value);
+            Assert.IsInstanceOf<OkObjectResult>(result.Result);
+            Assert.IsInstanceOf<FloorDto>(okObjectResult.Value);
         }
 
-        [TestMethod]
+        [Test]
         public async Task Get_ReturnsNotFoundResultWhenFloorDoesNotExist()
         {
             var id = Guid.NewGuid();
@@ -86,11 +84,11 @@ namespace Desk_Reserve.Tests
             var result = await controller.Get(id);
             var resultStatusCode = result.Result as NotFoundResult;
 
-            Assert.IsInstanceOfType<NotFoundResult>(result.Result);
+            Assert.IsInstanceOf<NotFoundResult>(result.Result);
             Assert.AreEqual(StatusCodes.Status404NotFound, resultStatusCode.StatusCode);
         }
 
-        [TestMethod]
+        [Test]
         public async Task Put_ReturnsNoContentResultOnSuccess()
         {
             var id = Guid.NewGuid();
@@ -105,11 +103,11 @@ namespace Desk_Reserve.Tests
             var result = await controller.Put(id, mockFloor);
             var resultStatusCode = result as NoContentResult;
 
-            Assert.IsInstanceOfType<NoContentResult>(result);
+            Assert.IsInstanceOf<NoContentResult>(result);
             Assert.AreEqual(StatusCodes.Status204NoContent, resultStatusCode.StatusCode);
         }
 
-        [TestMethod]
+        [Test]
         public async Task Put_ReturnsInternalServerErrorOnFail()
         {
             var id = Guid.NewGuid();
@@ -124,7 +122,7 @@ namespace Desk_Reserve.Tests
             Assert.AreEqual(StatusCodes.Status500InternalServerError, result.StatusCode);
         }
 
-        [TestMethod]
+        [Test]
         public async Task Post_ReturnsStatusCodeCreatedOnSuccess()
         {
             var floorDto = new FloorDto { FloorNumber = 1, HasElevator = true, FloorCoveringType = "tiles" };
@@ -139,7 +137,7 @@ namespace Desk_Reserve.Tests
             Assert.AreEqual(StatusCodes.Status201Created, resultStatusCode.StatusCode);
         }
 
-        [TestMethod]
+        [Test]
         public async Task Post_ReturnsStatusCodeCreatedOnFail()
         {
             var floorDto = new FloorDto { FloorNumber = 1, HasElevator = true, FloorCoveringType = "tiles" };
@@ -154,7 +152,7 @@ namespace Desk_Reserve.Tests
             Assert.AreEqual(StatusCodes.Status500InternalServerError, resultStatusCode.StatusCode);
         }
 
-        [TestMethod]
+        [Test]
         public async Task Delete_ReturnsNoContentResultOnSuccess()
         {
             var id = Guid.NewGuid();
@@ -165,10 +163,10 @@ namespace Desk_Reserve.Tests
             var result = await controller.Delete(id);
 
             Assert.IsNotNull(result);
-            Assert.IsInstanceOfType<NoContentResult>(result);
+            Assert.IsInstanceOf<NoContentResult>(result);
         }
 
-        [TestMethod]
+        [Test]
         public async Task Delete_ReturnsNotFoundResultOnFail()
         {
             var id = Guid.NewGuid();
@@ -179,7 +177,7 @@ namespace Desk_Reserve.Tests
             var result = await controller.Delete(id);
 
             Assert.IsNotNull(result);
-            Assert.IsInstanceOfType<NotFoundResult>(result);
+            Assert.IsInstanceOf<NotFoundResult>(result);
         }
     }
 }
