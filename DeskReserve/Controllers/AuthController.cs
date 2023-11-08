@@ -1,56 +1,114 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using DeskReserve.Data.DBContext;
 using DeskReserve.Data.DBContext.Entity;
 using DeskReserve.Domain;
-using System.Security.Claims;
-using Microsoft.AspNetCore.Authentication;
-using NuGet.Common;
-using System.IdentityModel.Tokens.Jwt;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
+using Microsoft.AspNetCore.Authorization;
+using DeskReserve.Interfaces;
 
 namespace DeskReserve.Controllers
 {
     [Route("api/auth")]
     [ApiController]
-    public class AuthController : ControllerBase
+    public class AccountController : ControllerBase
     {
-
-        private readonly ApplicationDbContext _context;
+        private readonly UserManager<User> _userManager;
+        private readonly SignInManager<User> _signInManager;
+        private readonly ILogger<AccountController> _logger;
+        private readonly IAuthService _authService;
         private readonly IConfiguration _configuration;
 
-        public AuthController(ApplicationDbContext context, IConfiguration configuration)
+        public AccountController(
+            UserManager<User> userManager,
+            SignInManager<User> signInManager,
+            ILogger<AccountController> logger,
+            IAuthService authService,
+            IConfiguration configuration)
         {
-            _context = context ?? throw new ArgumentNullException(nameof(context));
+            _userManager = userManager;
+            _signInManager = signInManager;
+            _logger = logger;
+            _authService = authService;
             _configuration = configuration;
         }
 
-        [HttpPost("login")]
-        public async Task<IActionResult> Login(LoginModel loginCredentials)
+        [HttpPost("register")]
+        [ProducesResponseType(StatusCodes.Status202Accepted)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> Register(RegisterModel registerModel)
         {
-            var claims = new List<Claim>
+            _logger.LogInformation($"Registration attempt for {registerModel.Email}");
+
+            if(!ModelState.IsValid)
             {
-                new Claim(ClaimTypes.Email, loginCredentials.Email),
-            };
+                BadRequest(ModelState);
+            }
 
-            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:Secret"]));
-            var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
-
-            var token = new JwtSecurityToken(
-                issuer: _configuration["JWT:Issuer"],
-                audience: _configuration["JWT:Audience"],
-                claims: claims,
-                expires: DateTime.Now.AddMinutes(30),
-                signingCredentials: credentials
-            );
-
-            return Ok(new
+            try
             {
-                token = new JwtSecurityTokenHandler().WriteToken(token),
-                expiration = token.ValidTo
-            });
+                User user = _authService.CreateUser(registerModel);
+
+                var result = await _userManager.CreateAsync(user);
+
+                if(!result.Succeeded)
+                {
+                    BadRequest($"User Registration failed");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Something went wrong in the {nameof(Register)}");
+                return Problem($"Something went wrong in the {nameof(Register)}", statusCode: 500);
+            }
+
+            return Ok("Registration successful.");
+        }
+
+        [HttpPost("login")]
+        [ProducesResponseType(StatusCodes.Status202Accepted)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> Login(LoginModel loginModel)
+        {
+            _logger.LogInformation($"Login Attempt for {loginModel.Email}");
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            try
+            {
+                if (!await _authService.ValidateUser(loginModel))
+                {
+                    return Unauthorized();
+                }
+
+                return Accepted(new TokenRequest { Token = await _authService.CreateToken(), RefreshToken = await _authService.CreateRefreshToken() });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Something Went Wrong in the {nameof(Login)}");
+                return Problem($"Something Went Wrong in the {nameof(Login)}", statusCode: 500);
+            }
+        }
+
+        [Authorize]
+        [HttpPost("logout")]
+        public async Task<IActionResult> Logout()
+        {
+            //TODO: Implement user logout logic
+
+            return Ok("Logged out successfully.");
+        }
+
+        [Authorize]
+        [HttpPost("change-password")]
+        public async Task<IActionResult> ChangePassword(ChangePasswordModel model)
+        {
+            //TODO: Implement user change-password
+
+            return Ok("Password changed successfully.");
         }
     }
 }
