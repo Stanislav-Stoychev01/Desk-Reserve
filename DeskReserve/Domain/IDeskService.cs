@@ -6,11 +6,11 @@ namespace DeskReserve.Domain
 	{
 		Task<IEnumerable<Desk>> GetAllAsync();
 
-		Task<Desk> GetOneAsync(Guid id);
+		Task<DeskDto> GetOneAsync(Guid id);
 
-		Task<bool> UpdateOneAsync(Guid id, Desk desk);
+		Task<bool> UpdateOneAsync(Guid id, DeskDto deskDto);
 
-		Task<Desk> CreateOneAsync(Desk floor);
+		Task<bool> CreateOneAsync(DeskDto desk);
 
 		Task<bool> DeleteOneAsync(Guid id);
 		

@@ -1,6 +1,8 @@
 using DeskReserve.Controllers;
 using DeskReserve.Data.DBContext;
 using DeskReserve.Domain;
+using DeskReserve.Mapper;
+using DeskReserve.Repository;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
@@ -26,7 +28,8 @@ String connectionString = builder.Configuration["ConnectionStrings:DefaultConnec
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connectionString));
 
 builder.Services.AddScoped<IDeskService, DeskService>();
-builder.Services.AddScoped<IDeskController, DesksController>();
+builder.Services.AddScoped<DesksController, DesksController>();
+builder.Services.AddScoped<IDeskRepository, DeskRepository>();
 
 var app = builder.Build();
 

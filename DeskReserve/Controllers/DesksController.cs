@@ -2,12 +2,13 @@
 using DeskReserve.Data.DBContext.Entity;
 using DeskReserve.Domain;
 using System.Net.Mime;
+using DeskReserve.Exception;
 
 namespace DeskReserve.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class DesksController : ControllerBase, IDeskController
+    public class DesksController : ControllerBase
     {
         private readonly IDeskService _service;
 
@@ -17,40 +18,56 @@ namespace DeskReserve.Controllers
 		}
 
 		[HttpGet]
-        public async Task<ActionResult<IEnumerable<Desk>>> GetAll()
+        public async Task<ActionResult<IEnumerable<Desk>>> Get()
         {
             var desks = await _service.GetAllAsync();
+
 			return Ok(desks);
         }
 
         [HttpGet("{id}")]
 		[ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Desk))]
 		[ProducesResponseType(StatusCodes.Status404NotFound)]
-		public async Task<ActionResult<Desk>> GetById(Guid id)
+		public async Task<ActionResult<Desk>> Get(Guid id)
         {
-            var desk = await _service.GetOneAsync(id);
+			ActionResult result;
 
-			return desk == null ? NotFound() : Ok(desk);
+			try
+			{
+				var desk = await _service.GetOneAsync(id);
+				result = Ok(desk);
+			}
+			catch(EntityNotFoundException ex)
+			{
+				result = NotFound(ex);
+			}
+
+			return result;
 		}
 
 		[HttpPut("{id}")]
 		[Consumes(MediaTypeNames.Application.Json)]
 		[ProducesResponseType(StatusCodes.Status204NoContent)]
 		[ProducesResponseType(StatusCodes.Status404NotFound)]
-		public async Task<IActionResult> Update(Guid id, Desk desk)
+		public async Task<IActionResult> Put(Guid id, DeskDto desk)
 		{
-			if (id != desk.DeskId)
+			IActionResult result;
+
+			try
 			{
-				return BadRequest();
+				var success = await _service.UpdateOneAsync(id, desk);
+				result = Ok(success);
+			}
+			catch (EntityNotFoundException ex)
+			{
+				result = NotFound(ex);
 			}
 
-			var success = await _service.UpdateOneAsync(id, desk);
-
-			return success ? NoContent() : NotFound();
+			return result;
 		}
 
 		[HttpPost]
-		public async Task<ActionResult<Desk>> Create(Desk desk)
+		public async Task<ActionResult<Desk>> Post(DeskDto desk)
 		{
 			var newDesk = await _service.CreateOneAsync(desk);
 
@@ -62,9 +79,19 @@ namespace DeskReserve.Controllers
 		[ProducesResponseType(StatusCodes.Status404NotFound)]
 		public async Task<IActionResult> Delete(Guid id)
 		{
-			var success = await _service.DeleteOneAsync(id);
+			IActionResult response;
 
-			return success ? NoContent() : NotFound();
+			try
+			{
+				var success = await _service.DeleteOneAsync(id);
+				response = NoContent();
+			}
+			catch(EntityNotFoundException ex)
+			{
+				response = NotFound(ex);
+			}
+
+			return response;
 		}
 
 	}
