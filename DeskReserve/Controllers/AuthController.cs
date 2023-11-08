@@ -11,21 +11,16 @@ namespace DeskReserve.Controllers
     [ApiController]
     public class AccountController : ControllerBase
     {
-        private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
         private readonly ILogger<AccountController> _logger;
         private readonly IAuthService _authService;
         private readonly IConfiguration _configuration;
 
         public AccountController(
-            UserManager<User> userManager,
-            SignInManager<User> signInManager,
             ILogger<AccountController> logger,
             IAuthService authService,
             IConfiguration configuration)
         {
-            _userManager = userManager;
-            _signInManager = signInManager;
             _logger = logger;
             _authService = authService;
             _configuration = configuration;
@@ -37,7 +32,7 @@ namespace DeskReserve.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Register(RegisterModel registerModel)
         {
-            _logger.LogInformation($"Registration attempt for {registerModel.Email}");
+            /* _logger.LogInformation($"Registration attempt for {registerModel.Email}");
 
             if(!ModelState.IsValid)
             {
@@ -59,7 +54,7 @@ namespace DeskReserve.Controllers
             {
                 _logger.LogError(ex, $"Something went wrong in the {nameof(Register)}");
                 return Problem($"Something went wrong in the {nameof(Register)}", statusCode: 500);
-            }
+            } */
 
             return Ok("Registration successful.");
         }

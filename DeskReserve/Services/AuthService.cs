@@ -1,7 +1,6 @@
 ﻿using DeskReserve.Data.DBContext.Entity;
 using DeskReserve.Domain;
 using DeskReserve.Interfaces;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -12,16 +11,19 @@ namespace DeskReserve.Services
 {
     public class AuthService : IAuthService
     {
-        private readonly UserManager<User> _userManager;
+        private readonly IUserRepository _userRepository;
+        private readonly ITokenRepository _tokenRepository;
         private readonly IConfiguration _configuration;
         private readonly IMapper _mapper;
         private User _user = new User();
 
-        public AuthService(UserManager<User> userManager,
+        public AuthService(IUserRepository userRepository,
+            ITokenRepository tokenRepository,
             IConfiguration configuration,
             IMapper mapper)
         {
-            _userManager = userManager;
+            _userRepository = userRepository;
+            _tokenRepository = tokenRepository;
             _configuration = configuration;
             _mapper = mapper;
         }
@@ -55,15 +57,12 @@ namespace DeskReserve.Services
         {
             var claims = new List<Claim>
             {
+                new Claim(ClaimTypes.Email, _user.Email),
                 new Claim(ClaimTypes.Name, _user.UserName)
             };
 
-            var roles = await _userManager.GetRolesAsync(_user);
-
-            foreach (var role in roles)
-            {
-                claims.Add(new Claim(ClaimTypes.Role, role));
-            }
+            var role = await _userRepository.GetRoleById(_user.UserId);
+            claims.Add(new Claim(ClaimTypes.Role, role.RoleName));
 
             return claims;
         }
@@ -78,16 +77,18 @@ namespace DeskReserve.Services
 
         public async Task<bool> ValidateUser(LoginModel loginModel)
         {
-            _user = await _userManager.FindByEmailAsync(loginModel.Email);
-            var validPassword = await _userManager.CheckPasswordAsync(_user, loginModel.Password);
+            _user = await _userRepository.GetByEmail(loginModel.Email);
+            var validPassword = ReferenceEquals(_user.PasswordHash, loginModel.Password);
             return (!ReferenceEquals(_user, null) && validPassword);
         }
 
         public async Task<string> CreateRefreshToken()
         {
-            await _userManager.RemoveAuthenticationTokenAsync(_user, "DeskReserveApi", "RefreshToken");
-            var newRefreshToken = await _userManager.GenerateUserTokenAsync(_user, "DeskReserveApi", "RefreshToken");
-            var result = await _userManager.SetAuthenticationTokenAsync(_user, "DeskReserveApi", "RefreshToken", newRefreshToken);
+            var newRefreshToken = GenerateRandomToken();
+
+            await _tokenRepository.RemoveRefreshToken(_user.UserId);
+            await _tokenRepository.SaveRefreshToken(_user.UserId, newRefreshToken);
+
             return newRefreshToken;
         }
 
@@ -95,16 +96,16 @@ namespace DeskReserve.Services
         {
             var jwtSecurityTokenHandler = new JwtSecurityTokenHandler();
             var tokenContent = jwtSecurityTokenHandler.ReadJwtToken(request.Token);
-            var username = tokenContent.Claims.ToList().FirstOrDefault(q => q.Type == ClaimTypes.Name)?.Value;
-            _user = await _userManager.FindByNameAsync(username);
+            var email = tokenContent.Claims.ToList().FirstOrDefault(q => q.Type == ClaimTypes.Email)?.Value;
+            _user = await _userRepository.GetByEmail(email);
             try
             {
-                var isValid = await _userManager.VerifyUserTokenAsync(_user, "DeskReserveApi", "RefreshToken", request.RefreshToken);
+                var isValid = await _tokenRepository.VerifyUserToken(_user.UserId, request.RefreshToken);
                 if (isValid)
                 {
                     return new TokenRequest { Token = await CreateToken(), RefreshToken = await CreateRefreshToken() };
                 }
-                await _userManager.UpdateSecurityStampAsync(_user);
+
             }
             catch (Exception ex)
             {
@@ -125,6 +126,12 @@ namespace DeskReserve.Services
             user.PasswordSalt = salt.ToString();
 
             return user;
+        }
+
+
+        private static string GenerateRandomToken()
+        {
+            return Guid.NewGuid().ToString("N");
         }
 
         public static string ComputeHash(string input, HashAlgorithm algorithm, Byte[] salt)
