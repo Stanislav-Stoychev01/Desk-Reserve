@@ -18,12 +18,14 @@ namespace DeskReserve.Controllers
 		}
 
 		[HttpGet]
-        public async Task<ActionResult<IEnumerable<Desk>>> Get()
+		[ProducesResponseType(StatusCodes.Status200OK)]
+		[ProducesResponseType(StatusCodes.Status404NotFound)]
+		public async Task<ActionResult<IEnumerable<Desk>>> Get()
         {
-            var desks = await _service.GetAllAsync();
+			var desks = await _service.GetAllAsync();
 
-			return Ok(desks);
-        }
+			return !ReferenceEquals(desks, null) ? Ok(desks) : NotFound();
+		}
 
         [HttpGet("{id}")]
 		[ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Desk))]
@@ -47,7 +49,7 @@ namespace DeskReserve.Controllers
 
 		[HttpPut("{id}")]
 		[Consumes(MediaTypeNames.Application.Json)]
-		[ProducesResponseType(StatusCodes.Status204NoContent)]
+		[ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status404NotFound)]
 		public async Task<IActionResult> Put(Guid id, DeskDto desk)
 		{
@@ -67,11 +69,13 @@ namespace DeskReserve.Controllers
 		}
 
 		[HttpPost]
+		[ProducesResponseType(StatusCodes.Status201Created)]
+		[ProducesResponseType(StatusCodes.Status409Conflict)]
 		public async Task<ActionResult<Desk>> Post(DeskDto desk)
 		{
-			var newDesk = await _service.CreateOneAsync(desk);
+			var success = await _service.CreateOneAsync(desk);
 
-			return Ok(newDesk);
+			return success ? StatusCode(StatusCodes.Status201Created) : StatusCode(StatusCodes.Status409Conflict);
 		}
 
 		[HttpDelete("{id}")]

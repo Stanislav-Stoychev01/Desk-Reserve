@@ -3,7 +3,7 @@
 namespace DeskReserve.Exception
 {
     [Serializable]
-    internal class EntityNotFoundException : System.Exception
+    public class EntityNotFoundException : System.Exception
     {
         public EntityNotFoundException()
         {

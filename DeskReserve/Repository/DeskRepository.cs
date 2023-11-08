@@ -16,7 +16,7 @@ namespace DeskReserve.Repository
 
 		public async Task<IEnumerable<Desk>> GetAll()
 		{
-			return await _context.Desks.ToListAsync();
+			return await _context.Desks.ToListAsync() ?? throw new ArgumentNullException();
 		}
 
 		public async Task<Desk> GetById(Guid id)
