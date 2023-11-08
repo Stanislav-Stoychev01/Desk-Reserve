@@ -1,5 +1,4 @@
 ﻿using DeskReserve.Data.DBContext.Entity;
-using DeskReserve.Domain;
 
 namespace DeskReserve.Interfaces
 {
@@ -13,6 +12,6 @@ namespace DeskReserve.Interfaces
 
         Task<bool> Update(Floor floor);
 
-        Task<bool> Delete(Guid id);
+        Task<bool> Delete(Floor floor);
     }
 }

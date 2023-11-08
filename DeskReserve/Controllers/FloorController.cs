@@ -37,16 +37,16 @@ namespace DeskReserve.Controllers
         }
 
         [HttpPut("{id}/edit")]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Put(Guid id, FloorDto floor)
         {
             var success = await _service.UpdateOneAsync(id, floor);
 
-            return success ? NoContent() : StatusCode(StatusCodes.Status500InternalServerError);
+            return success ? Ok() : StatusCode(StatusCodes.Status500InternalServerError);
         }
 
-        [HttpPost("new")]
+        [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<FloorDto>> Post(FloorDto floor)
@@ -57,13 +57,13 @@ namespace DeskReserve.Controllers
         }
 
         [HttpDelete("{id}")]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Delete(Guid id)
         {
             var success = await _service.DeleteOneAsync(id);
 
-            return success ? NoContent() : NotFound();
+            return success ? Ok() : NotFound();
         }
     }
 }

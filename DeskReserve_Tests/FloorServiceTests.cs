@@ -15,8 +15,7 @@ namespace Desk_Reserve.Tests
             var repositoryMock = new Mock<IFloorRepository>();
             repositoryMock.Setup(repo => repo.GetAll()).ReturnsAsync(new List<Floor>());
 
-            var mapperMock = new Mock<IMapper>();
-            var service = new FloorService(repositoryMock.Object, mapperMock.Object);
+            var service = new FloorService(repositoryMock.Object);
 
             var floors = await service.GetAllAsync();
 
@@ -33,15 +32,7 @@ namespace Desk_Reserve.Tests
             var repositoryMock = new Mock<IFloorRepository>();
             repositoryMock.Setup(repo => repo.GetById(id)).ReturnsAsync(floorEntity);
 
-            var mapperMock = new Mock<IMapper>();
-            mapperMock.Setup(mapper => mapper.MapProperties(floorEntity, It.IsAny<FloorDto>())).Returns<Floor, FloorDto>((entity, dto) =>
-            {
-                dto.FloorNumber = entity.FloorNumber;
-                dto.HasElevator = entity.HasElevator;
-                dto.FloorCoveringType = entity.FloorCoveringType;
-                return dto;
-            });
-            var floorService = new FloorService(repositoryMock.Object, mapperMock.Object);
+            var floorService = new FloorService(repositoryMock.Object);
 
             var result = await floorService.GetOneAsync(id);
 
@@ -58,8 +49,7 @@ namespace Desk_Reserve.Tests
             var repositoryMock = new Mock<IFloorRepository>();
             repositoryMock.Setup(repo => repo.GetById(id)).ReturnsAsync(expectedFloor);
 
-            var mapperMock = new Mock<IMapper>();
-            var floorService = new FloorService(repositoryMock.Object, mapperMock.Object);
+            var floorService = new FloorService(repositoryMock.Object);
 
             var result = await floorService.GetOneAsync(id);
 
@@ -80,16 +70,7 @@ namespace Desk_Reserve.Tests
             var repositoryMock = new Mock<IFloorRepository>();
             repositoryMock.Setup(repo => repo.Update(It.IsAny<Floor>())).ReturnsAsync(true);
 
-            var mapperMock = new Mock<IMapper>();
-            mapperMock.Setup(mapper => mapper.MapProperties(floorDto, It.IsAny<Floor>())).Returns<FloorDto, Floor>((dto, entity) =>
-            {
-                entity.FloorNumber = dto.FloorNumber;
-                entity.HasElevator = dto.HasElevator;
-                entity.FloorCoveringType = dto.FloorCoveringType;
-                return entity;
-            });
-
-            var floorService = new FloorService(repositoryMock.Object, mapperMock.Object);
+            var floorService = new FloorService(repositoryMock.Object);
 
             var result = await floorService.UpdateOneAsync(id, floorDto);
 
@@ -100,12 +81,16 @@ namespace Desk_Reserve.Tests
         public async Task DeleteOneAsync_ValidId_ReturnsTrue()
         {
             Guid id = Guid.NewGuid();
+            Floor floor = new Floor()
+            {
+                FloorId = id,
+            };
 
             var repositoryMock = new Mock<IFloorRepository>();
-            repositoryMock.Setup(repo => repo.Delete(id)).ReturnsAsync(true);
+            repositoryMock.Setup(repo => repo.Delete(floor)).ReturnsAsync(true);
+            repositoryMock.Setup(repo => repo.GetById(id)).ReturnsAsync(floor);
 
-            var mapperMock = new Mock<IMapper>();
-            var floorService = new FloorService(repositoryMock.Object, mapperMock.Object);
+            var floorService = new FloorService(repositoryMock.Object);
 
             var result = await floorService.DeleteOneAsync(id);
 
@@ -115,13 +100,16 @@ namespace Desk_Reserve.Tests
         [Test]
         public async Task DeleteOneAsync_InvalidId_ReturnsFalse()
         {
-            var id = Guid.NewGuid();
+            Guid id = Guid.NewGuid();
+            Floor floor = new Floor()
+            {
+                FloorId = id,
+            };
 
             var repositoryMock = new Mock<IFloorRepository>();
-            repositoryMock.Setup(repo => repo.Delete(id)).ReturnsAsync(false);
+            repositoryMock.Setup(repo => repo.Delete(floor)).ReturnsAsync(false);
 
-            var mapperMock = new Mock<IMapper>();
-            var floorService = new FloorService(repositoryMock.Object, mapperMock.Object);
+            var floorService = new FloorService(repositoryMock.Object);
 
             var result = await floorService.DeleteOneAsync(id);
 

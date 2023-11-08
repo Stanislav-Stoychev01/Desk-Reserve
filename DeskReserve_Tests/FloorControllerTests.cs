@@ -89,7 +89,7 @@ namespace Desk_Reserve.Tests
         }
 
         [Test]
-        public async Task Put_ReturnsNoContentResultOnSuccess()
+        public async Task Put_ReturnsOkResultOnSuccess()
         {
             var id = Guid.NewGuid();
             var mockFloor = new FloorDto { FloorNumber = 1, HasElevator = true, FloorCoveringType = null };
@@ -101,10 +101,10 @@ namespace Desk_Reserve.Tests
             var controller = new FloorController(mockService.Object);
 
             var result = await controller.Put(id, mockFloor);
-            var resultStatusCode = result as NoContentResult;
+            var resultStatusCode = result as OkResult;
 
-            Assert.IsInstanceOf<NoContentResult>(result);
-            Assert.AreEqual(StatusCodes.Status204NoContent, resultStatusCode.StatusCode);
+            Assert.IsInstanceOf<OkResult>(result);
+            Assert.AreEqual(StatusCodes.Status200OK, resultStatusCode.StatusCode);
         }
 
         [Test]
@@ -153,7 +153,7 @@ namespace Desk_Reserve.Tests
         }
 
         [Test]
-        public async Task Delete_ReturnsNoContentResultOnSuccess()
+        public async Task Delete_ReturnsOkResultOnSuccess()
         {
             var id = Guid.NewGuid();
             var serviceMock = new Mock<IFloorService>();
@@ -163,7 +163,7 @@ namespace Desk_Reserve.Tests
             var result = await controller.Delete(id);
 
             Assert.IsNotNull(result);
-            Assert.IsInstanceOf<NoContentResult>(result);
+            Assert.IsInstanceOf<OkResult>(result);
         }
 
         [Test]

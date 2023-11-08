@@ -33,31 +33,13 @@ namespace DeskReserve.Repository
 
         public async Task<bool> Update(Floor floor)
         {
-            var floorEntity = await _context.Floor.FindAsync(floor.FloorId);
-
-            if (ReferenceEquals(floorEntity, null))
-            {
-                return false;
-            }
-            else
-            {
-                _context.Entry(floorEntity).State = EntityState.Detached;
-            }
-
             _context.Entry(floor).State = EntityState.Modified;
 
             return await _context.SaveChangesAsync() > 0;
         }
 
-        public async Task<bool> Delete(Guid id)
+        public async Task<bool> Delete(Floor floor)
         {
-            var floor = await _context.Floor.FindAsync(id);
-
-            if (ReferenceEquals(floor, null))
-            {
-                return false;
-            }
-
             _context.Floor.Remove(floor);
 
             return await _context.SaveChangesAsync() > 0;
