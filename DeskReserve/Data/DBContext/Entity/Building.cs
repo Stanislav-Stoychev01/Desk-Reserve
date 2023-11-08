@@ -25,6 +25,5 @@ namespace DeskReserve.Data.DBContext.Entity
         [Required(ErrorMessage = "Floors are required.")]
         [DefaultValue(1)]
         public int Floors { get; set; }
-
     }
 }

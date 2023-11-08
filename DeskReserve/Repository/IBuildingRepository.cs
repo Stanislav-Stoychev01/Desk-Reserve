@@ -1,8 +1,8 @@
 ﻿using DeskReserve.Data.DBContext.Entity;
 
-namespace DeskReserve.Domain
+namespace DeskReserve.Repository
 {
-    public interface IRepository
+    public interface IBuildingRepository
     {
         Task<List<Building>> GetAllAsync();
         Task<Building> GetByIdAsync(Guid id);

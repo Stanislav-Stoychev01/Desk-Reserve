@@ -2,15 +2,13 @@
 using DeskReserve.Data.DBContext;
 using Microsoft.EntityFrameworkCore;
 
-
-
-namespace DeskReserve.Domain
+namespace DeskReserve.Repository
 {
-    public class Repository : IRepository
+    public class BuildingRepository : IBuildingRepository
     {
         private readonly ApplicationDbContext _dbContext;
 
-        public Repository(ApplicationDbContext dbContext)
+        public BuildingRepository(ApplicationDbContext dbContext)
         {
             _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
         }
@@ -28,7 +26,7 @@ namespace DeskReserve.Domain
         public async Task<bool> CreateAsync(Building newBuilding)
         {
             _dbContext.Buildings.Add(newBuilding);
-            
+
             return await _dbContext.SaveChangesAsync() > 0;
         }
 
