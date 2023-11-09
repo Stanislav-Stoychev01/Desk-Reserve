@@ -16,7 +16,7 @@ namespace DeskReserve.Repository
 
 		public async Task<IEnumerable<Desk>> GetAll()
 		{
-			return await _context.Desks.ToListAsync() ?? throw new ArgumentNullException();
+			return await _context.Desks.ToListAsync() ?? throw new EntityNotFoundException();
 		}
 
 		public async Task<Desk> GetById(Guid id)
@@ -28,9 +28,7 @@ namespace DeskReserve.Repository
 		{
 			var existingDesk = await _context.Desks.FindAsync(desk.DeskId) ?? throw new EntityNotFoundException();
 
-			existingDesk.DeskNumber = desk.DeskNumber;
-			existingDesk.IsOccupied = desk.IsOccupied;
-			existingDesk.IsStatic = desk.IsStatic;
+			_context.Entry(desk).State = EntityState.Modified;
 
 			return await _context.SaveChangesAsync() > 0;
 		}

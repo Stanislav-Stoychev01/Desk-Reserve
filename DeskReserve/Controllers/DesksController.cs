@@ -3,6 +3,7 @@ using DeskReserve.Data.DBContext.Entity;
 using DeskReserve.Domain;
 using System.Net.Mime;
 using DeskReserve.Exception;
+using DeskReserve.Domain.Service;
 
 namespace DeskReserve.Controllers
 {
@@ -73,7 +74,7 @@ namespace DeskReserve.Controllers
 		[ProducesResponseType(StatusCodes.Status409Conflict)]
 		public async Task<ActionResult<Desk>> Post(DeskDto desk)
 		{
-			var success = await _service.CreateOneAsync(desk);
+			var success = await _service.CreateOne(desk);
 
 			return success ? StatusCode(StatusCodes.Status201Created) : StatusCode(StatusCodes.Status409Conflict);
 		}

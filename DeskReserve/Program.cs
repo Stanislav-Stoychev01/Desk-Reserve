@@ -1,6 +1,6 @@
 using DeskReserve.Controllers;
 using DeskReserve.Data.DBContext;
-using DeskReserve.Domain;
+using DeskReserve.Domain.Service;
 using DeskReserve.Mapper;
 using DeskReserve.Repository;
 using Microsoft.EntityFrameworkCore;

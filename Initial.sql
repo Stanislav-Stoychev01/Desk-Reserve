@@ -1,10 +1,3 @@
 CREATE DATABASE test123
 USE test123
 
-CREATE TABLE [Desk](
-	[DeskId] UNIQUEIDENTIFIER PRIMARY KEY,
-	[DeskNumber] INT,
-	[RoomId] UNIQUEIDENTIFIER,
-	[IsOccupied] BIT,
-	[IsStatic] BIT
-)

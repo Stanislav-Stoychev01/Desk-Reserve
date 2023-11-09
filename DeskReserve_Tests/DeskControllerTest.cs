@@ -5,11 +5,11 @@ using DeskReserve.Data.DBContext.Entity;
 using DeskReserve.Domain;
 using Microsoft.AspNetCore.Http;
 using DeskReserve.Exception;
-
+using DeskReserve.Domain.Service;
 
 namespace DeskReserve_Tests
 {
-	[TestFixture]
+    [TestFixture]
 	public class DeskControllerTest
 	{
 		[Test]
@@ -123,7 +123,7 @@ namespace DeskReserve_Tests
 			var deskDto = new DeskDto { DeskNumber = 1, IsOccupied = true, IsStatic = false };
 			var serviceMock = new Mock<IDeskService>();
 
-			serviceMock.Setup(service => service.CreateOneAsync(deskDto)).ReturnsAsync(true);
+			serviceMock.Setup(service => service.CreateOne(deskDto)).ReturnsAsync(true);
 			var controller = new DesksController(serviceMock.Object);
 
 			var result = await controller.Post(deskDto);
@@ -139,7 +139,7 @@ namespace DeskReserve_Tests
 			var deskDto = new DeskDto { DeskNumber = 1, IsOccupied = true, IsStatic = false };
 			var serviceMock = new Mock<IDeskService>();
 
-			serviceMock.Setup(service => service.CreateOneAsync(deskDto)).ReturnsAsync(false);
+			serviceMock.Setup(service => service.CreateOne(deskDto)).ReturnsAsync(false);
 			var controller = new DesksController(serviceMock.Object);
 
 			var result = await controller.Post(deskDto);

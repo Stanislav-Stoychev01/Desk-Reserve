@@ -2,22 +2,34 @@
 using DeskReserve.Domain;
 using DeskReserve.Exception;
 using DeskReserve.Repository;
+using DeskReserve.Domain.Service;
 using Moq;
+using NUnit.Framework;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Desk_Reserve.Tests
 {
 	[TestFixture]
 	public class DeskServiceTests
 	{
+		private Mock<IDeskRepository> repositoryMock;
+		private DeskService deskService;
+
+		[SetUp]
+		public void SetUp()
+		{
+			repositoryMock = new Mock<IDeskRepository>();
+			deskService = new DeskService(repositoryMock.Object);
+		}
+
 		[Test]
 		public async Task GetAllAsync_ReturnsAllDesks()
 		{
-			var repositoryMock = new Mock<IDeskRepository>();
 			repositoryMock.Setup(repo => repo.GetAll()).ReturnsAsync(new List<Desk>());
 
-			var service = new DeskService(repositoryMock.Object);
-
-			var desks = await service.GetAllAsync();
+			var desks = await deskService.GetAllAsync();
 
 			Assert.IsNotNull(desks);
 		}
@@ -28,10 +40,7 @@ namespace Desk_Reserve.Tests
 			Guid id = Guid.NewGuid();
 			Desk desk = new Desk { DeskId = id };
 
-			var repositoryMock = new Mock<IDeskRepository>();
 			repositoryMock.Setup(repo => repo.GetById(id)).ReturnsAsync(desk);
-
-			var deskService = new DeskService(repositoryMock.Object);
 
 			var result = await deskService.GetOneAsync(id);
 
@@ -43,10 +52,7 @@ namespace Desk_Reserve.Tests
 		{
 			Guid id = Guid.NewGuid();
 
-			var repositoryMock = new Mock<IDeskRepository>();
 			repositoryMock.Setup(repo => repo.GetById(id)).ThrowsAsync(new EntityNotFoundException());
-
-			var deskService = new DeskService(repositoryMock.Object);
 
 			async Task Act() => await deskService.GetOneAsync(id);
 
@@ -67,11 +73,8 @@ namespace Desk_Reserve.Tests
 				IsStatic = false
 			};
 
-			var repositoryMock = new Mock<IDeskRepository>();
 			repositoryMock.Setup(repo => repo.GetById(id)).ReturnsAsync(desk);
 			repositoryMock.Setup(repo => repo.Update(desk)).ReturnsAsync(true);
-
-			var deskService = new DeskService(repositoryMock.Object);
 
 			var result = await deskService.UpdateOneAsync(id, deskDto);
 
@@ -83,10 +86,7 @@ namespace Desk_Reserve.Tests
 		{
 			Guid id = Guid.NewGuid();
 
-			var repositoryMock = new Mock<IDeskRepository>();
 			repositoryMock.Setup(repo => repo.Delete(id)).ReturnsAsync(true);
-
-			var deskService = new DeskService(repositoryMock.Object);
 
 			var result = await deskService.DeleteOneAsync(id);
 
@@ -98,10 +98,7 @@ namespace Desk_Reserve.Tests
 		{
 			var id = Guid.NewGuid();
 
-			var repositoryMock = new Mock<IDeskRepository>();
 			repositoryMock.Setup(repo => repo.Delete(id)).ReturnsAsync(false);
-
-			var deskService = new DeskService(repositoryMock.Object);
 
 			var result = await deskService.DeleteOneAsync(id);
 
