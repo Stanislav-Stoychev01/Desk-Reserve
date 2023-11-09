@@ -42,6 +42,8 @@ namespace DeskReserve.Tests.Controllers
 
             var result = await _buildingController.Get();
             Assert.IsInstanceOf<OkObjectResult>(result.Result);
+            Assert.AreEqual((List<Building>)result.Value, buildings);
+
         }
 
         [Test]
@@ -56,7 +58,7 @@ namespace DeskReserve.Tests.Controllers
         [Test]
         public async Task GetById_ExistingBuildingId_ReturnsBuildingWithOkStatus()
         {
-            var id = new Guid("18e47476-06bb-4a7c-a348-aaa4e0d0e7c0");
+            var id = new Guid();
 
             var building = new Building
             {
@@ -76,7 +78,7 @@ namespace DeskReserve.Tests.Controllers
         [Test]
         public async Task GetById_NonExistingBuildingId_ReturnsNotFoundStatus()
         {
-            var id = new Guid("3fa85f64-5717-4562-b3fc-2c963f66afa6");
+            var id = new Guid();
             _buildingServiceMock.Setup(service => service.GetBuildingById(id)).ThrowsAsync(new DataNotFound());
 
             var result = await _buildingController.GetById(id);
@@ -120,7 +122,7 @@ namespace DeskReserve.Tests.Controllers
         [Test]
         public async Task Delete_ExistingBuildingId_ReturnsOkStatus()
         {
-            var guid = new Guid("3fa85f64-5717-4562-b3fc-2c963f66afa6");
+            var guid = new Guid();
             _buildingServiceMock.Setup(service => service.DeleteBuilding(guid)).ReturnsAsync(true);
 
             var result = await _buildingController.Delete(guid);
@@ -130,7 +132,7 @@ namespace DeskReserve.Tests.Controllers
         [Test]
         public async Task Delete_NonExistingBuildingId_ReturnsNotFoundStatus()
         {
-            var guid = new Guid("3fa85f64-5717-4562-b3fc-2c963f66afa6");
+            var guid = new Guid();
             _buildingServiceMock.Setup(service => service.DeleteBuilding(guid)).ThrowsAsync(new DataNotFound());
 
             var result = await _buildingController.Delete(guid);
@@ -140,7 +142,7 @@ namespace DeskReserve.Tests.Controllers
         [Test]
         public async Task Put_UpdatesBuilding_ReturnsOkStatus()
         {
-            var id = new Guid("3fa85f64-5717-4562-b3fc-2c963f66afa6");
+            var id = new Guid();
 
             var buildingDto = new BuildingDto
             {
@@ -159,7 +161,7 @@ namespace DeskReserve.Tests.Controllers
         [Test]
         public async Task Put_InvalidUpdate_ReturnsNotFoundOrErrorStatus()
         {
-            var id = new Guid("3fa85f64-5717-4562-b3fc-2c963f66afa7");
+            var id = new Guid();
 
             var buildingDto = new BuildingDto
             {

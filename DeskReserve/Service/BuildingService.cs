@@ -42,7 +42,7 @@ namespace DeskReserve.Service
         public async Task<bool> UpdateBuilding(Guid id, BuildingDto building)
         {
             bool result;
-            var existingBuilding = await _buildingRepository.GetByIdAsync(id) ?? throw new DataNotFound();
+            var existingBuilding = await _buildingRepository.GetByIdAsync(id) ?? throw new DataNotFound(ExceptionMessages.DataNotFound);
 
             var updateBuilding = building.ToBuilding(id);
             result = await _buildingRepository.UpdateAsync(updateBuilding);

@@ -21,7 +21,7 @@ namespace DeskReserve.Repository
 
         public async Task<Building> GetByIdAsync(Guid id)
         {
-            return await _dbContext.Buildings.FindAsync(id) ?? throw new DataNotFound("Data don't exist");
+            return await _dbContext.Buildings.FindAsync(id) ?? throw new DataNotFound(ExceptionMessages.DataNotFound);
         }
 
         public async Task<bool> CreateAsync(Building newBuilding)

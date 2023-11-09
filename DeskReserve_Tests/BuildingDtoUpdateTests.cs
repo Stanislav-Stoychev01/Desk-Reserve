@@ -2,7 +2,7 @@
 
 namespace DeskReserve_Tests
 {
-    internal class BuildingDtoUpdateTests
+    public class BuildingDtoUpdateTests
     {
         [Test]
         public void UpgradeDto_WhenCalled_ReturnsBuildingWithNewId()
@@ -15,7 +15,7 @@ namespace DeskReserve_Tests
                 Floors = 1
             };
 
-            var result =buildingDto.ToBuilding();
+            var result = buildingDto.ToBuilding();
 
             Assert.IsNotNull(result);
             Assert.AreNotEqual(Guid.Empty, result.BuildingId);

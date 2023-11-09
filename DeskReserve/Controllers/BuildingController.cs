@@ -20,83 +20,103 @@ namespace DeskReserve.Controllers
         [HttpGet]
         public async Task<ActionResult<List<Building>>> Get()
         {
+            ActionResult result;
+
             try
             {
                 var buildings = await _buildingService.GetAll();
-                return Ok(buildings);
+                result = Ok(buildings);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, ex.Message);
+                result = StatusCode(500, ex.Message);
             }
+
+            return result;
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<Building>> GetById(Guid id)
         {
+            ActionResult result;
+
             try
             {
                 var building = await _buildingService.GetBuildingById(id);
-                return Ok(building);
+                result = Ok(building);
             }
             catch (DataNotFound ex)
             {
-                return NotFound(ex.Message);
+                result = NotFound(ex.Message);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, ex.Message);
+                result = StatusCode(500, ex.Message);
             }
+
+            return result;
         }
 
         [HttpPost]
         public async Task<IActionResult> Post(BuildingDto building)
         {
+            ActionResult result;
+
             try
             {
                 var buildingIsAdded = await _buildingService.AddNew(building);
-                return StatusCode(201);
+                result = StatusCode(201);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, ex.Message);
+                result = StatusCode(500, ex.Message);
             }
+
+            return result;
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
+            ActionResult result;
+
             try
             {
                 var deletionResult = await _buildingService.DeleteBuilding(id);
-                return Ok(deletionResult);
+                result = Ok(deletionResult);
             }
             catch (DataNotFound ex)
             {
-                return NotFound(ex.Message);
+                result = NotFound(ex.Message);
             }
             catch (Exception ex)
             {
-                return StatusCode(500,ex.Message);
+                result = StatusCode(500,ex.Message);
             }
+
+            return result;
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> Put(Guid id, BuildingDto building)
         {
+            ActionResult result;
+
             try
             {
                 var updateResult = await _buildingService.UpdateBuilding(id, building);
-                return Ok(updateResult);
+                result = Ok(updateResult);
             }
             catch (DataNotFound ex)
             {
-                return NotFound(ex.Message);
+                result = NotFound(ex.Message);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, ex.Message);
+                result = StatusCode(500, ex.Message);
             }
+
+            return result;
         }
     }
 }

@@ -7,7 +7,7 @@ using Moq;
 
 namespace DeskReserve.Tests.Service
 {
-    internal class BuildingServiceTests
+    public class BuildingServiceTests
     {
         private BuildingService _buildingService;
         private Mock<IBuildingRepository> _buildingRepositoryMock;
@@ -54,7 +54,7 @@ namespace DeskReserve.Tests.Service
 
             var newBuilding = new Building
             {
-                BuildingId = new Guid("3fa85f64-5717-4562-b3fc-2c963f66afa7"),
+                BuildingId = new Guid(),
                 City = "City1",
                 StreetAddress = "StreetAddress1",
                 Neighbourhood = "Neighbourhood1",
@@ -70,7 +70,7 @@ namespace DeskReserve.Tests.Service
         [Test]
         public async Task Erase_BuildingExistsAndDeletionSucceeds_ReturnsTrue()
         {
-            var guid = new Guid("3fa85f64-5717-4562-b3fc-2c963f66afa7");
+            var guid = new Guid();
 
             var existingBuilding = new Building
             {
@@ -91,7 +91,7 @@ namespace DeskReserve.Tests.Service
         [Test]
         public async Task Erase_BuildingDoesNotExist_ReturnsFalse()
         {
-            var guid = new Guid("3fa85f64-5717-4562-b3fc-2c963f66afa7");
+            var guid = new Guid();
 
             _buildingRepositoryMock.Setup(repo => repo.GetByIdAsync(guid)).ReturnsAsync((Building)null);
             var result = await _buildingService.DeleteBuilding(guid);
@@ -102,7 +102,7 @@ namespace DeskReserve.Tests.Service
         [Test]
         public async Task Update_BuildingExistsAndUpdateSucceeds_ReturnsTrue()
         {
-            var guid = new Guid("3fa85f64-5717-4562-b3fc-2c963f66afa7");
+            var guid = new Guid();
 
             var existingBuilding = new Building
             {
@@ -141,7 +141,7 @@ namespace DeskReserve.Tests.Service
         [Test]
         public async Task Update_BuildingDoesNotExist_ReturnsFalse()
         {
-            var guid = new Guid("3fa85f64-5717-4562-b3fc-2c963f66afa7");
+            var guid = new Guid();
             _buildingRepositoryMock.Setup(repo => repo.GetByIdAsync(guid)).ThrowsAsync(new DataNotFound());
 
             AsyncTestDelegate result = () => _buildingService.UpdateBuilding(guid, new BuildingDto());
