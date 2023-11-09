@@ -2,7 +2,7 @@
 using DeskReserve.Data.DBContext.Entity;
 using DeskReserve.Domain;
 using DeskReserve.Exceptions;
-using DeskReserve.Service;
+using DeskReserve.Services;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 

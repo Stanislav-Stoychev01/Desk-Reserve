@@ -3,7 +3,7 @@ using DeskReserve.Domain;
 using DeskReserve.Exceptions;
 using DeskReserve.Repository;
 
-namespace DeskReserve.Service
+namespace DeskReserve.Services
 {
     public class BuildingService : IBuildingService
     {

@@ -1,7 +1,7 @@
 using DeskReserve.Controllers;
 using DeskReserve.Data.DBContext;
 using DeskReserve.Repository;
-using DeskReserve.Service;
+using DeskReserve.Services;
 using Microsoft.EntityFrameworkCore;
 
 const String CorsDisablePolicy = "AllowAnyOrigin";

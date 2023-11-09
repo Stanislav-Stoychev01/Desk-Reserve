@@ -2,7 +2,7 @@
 using DeskReserve.Domain;
 using DeskReserve.Exceptions;
 using DeskReserve.Repository;
-using DeskReserve.Service;
+using DeskReserve.Services;
 using Moq;
 
 namespace DeskReserve.Tests.Service
