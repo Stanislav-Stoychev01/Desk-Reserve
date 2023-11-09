@@ -42,7 +42,7 @@ namespace Desk_Reserve.Tests
 
 			repositoryMock.Setup(repo => repo.GetById(id)).ReturnsAsync(desk);
 
-			var result = await deskService.GetOneAsync(id);
+			var result = await deskService.GetAsync(id);
 
 			Assert.IsNotNull(result);
 		}
@@ -54,7 +54,7 @@ namespace Desk_Reserve.Tests
 
 			repositoryMock.Setup(repo => repo.GetById(id)).ThrowsAsync(new EntityNotFoundException());
 
-			async Task Act() => await deskService.GetOneAsync(id);
+			async Task Act() => await deskService.GetAsync(id);
 
 			Assert.ThrowsAsync<EntityNotFoundException>(Act);
 		}
@@ -76,7 +76,7 @@ namespace Desk_Reserve.Tests
 			repositoryMock.Setup(repo => repo.GetById(id)).ReturnsAsync(desk);
 			repositoryMock.Setup(repo => repo.Update(desk)).ReturnsAsync(true);
 
-			var result = await deskService.UpdateOneAsync(id, deskDto);
+			var result = await deskService.UpdateAsync(id, deskDto);
 
 			Assert.IsTrue(result);
 		}
@@ -88,7 +88,7 @@ namespace Desk_Reserve.Tests
 
 			repositoryMock.Setup(repo => repo.Delete(id)).ReturnsAsync(true);
 
-			var result = await deskService.DeleteOneAsync(id);
+			var result = await deskService.DeleteAsync(id);
 
 			Assert.IsTrue(result);
 		}
@@ -100,7 +100,7 @@ namespace Desk_Reserve.Tests
 
 			repositoryMock.Setup(repo => repo.Delete(id)).ReturnsAsync(false);
 
-			var result = await deskService.DeleteOneAsync(id);
+			var result = await deskService.DeleteAsync(id);
 
 			Assert.IsFalse(result);
 		}

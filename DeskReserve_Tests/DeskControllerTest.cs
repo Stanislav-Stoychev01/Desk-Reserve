@@ -9,7 +9,7 @@ using DeskReserve.Domain.Service;
 
 namespace DeskReserve_Tests
 {
-    [TestFixture]
+	[TestFixture]
 	public class DeskControllerTest
 	{
 		[Test]
@@ -56,7 +56,7 @@ namespace DeskReserve_Tests
 			var desk = new DeskDto { DeskNumber = 1, IsOccupied = true, IsStatic = false };
 
 			var mockService = new Mock<IDeskService>();
-			mockService.Setup(service => service.GetOneAsync(id))
+			mockService.Setup(service => service.GetAsync(id))
 				.ReturnsAsync(desk);
 
 			var controller = new DesksController(mockService.Object);
@@ -73,7 +73,7 @@ namespace DeskReserve_Tests
 		{
 			var id = Guid.NewGuid();
 			var mockService = new Mock<IDeskService>();
-			mockService.Setup(service => service.GetOneAsync(id)).ThrowsAsync(new EntityNotFoundException());
+			mockService.Setup(service => service.GetAsync(id)).ThrowsAsync(new EntityNotFoundException());
 
 			var controller = new DesksController(mockService.Object);
 
@@ -90,7 +90,7 @@ namespace DeskReserve_Tests
 			var deskMock = new DeskDto { DeskNumber = 1, IsOccupied = true, IsStatic = false };
 
 			var mockService = new Mock<IDeskService>();
-			mockService.Setup(service => service.UpdateOneAsync(id, deskMock))
+			mockService.Setup(service => service.UpdateAsync(id, deskMock))
 				.ReturnsAsync(true);
 
 			var controller = new DesksController(mockService.Object);
@@ -108,7 +108,7 @@ namespace DeskReserve_Tests
 			var deskDto = (DeskDto)null;
 
 			var serviceMock = new Mock<IDeskService>();
-			serviceMock.Setup(service => service.UpdateOneAsync(id, deskDto)).ThrowsAsync(new EntityNotFoundException());
+			serviceMock.Setup(service => service.UpdateAsync(id, deskDto)).ThrowsAsync(new EntityNotFoundException());
 
 			var controller = new DesksController(serviceMock.Object);
 
@@ -123,7 +123,7 @@ namespace DeskReserve_Tests
 			var deskDto = new DeskDto { DeskNumber = 1, IsOccupied = true, IsStatic = false };
 			var serviceMock = new Mock<IDeskService>();
 
-			serviceMock.Setup(service => service.CreateOne(deskDto)).ReturnsAsync(true);
+			serviceMock.Setup(service => service.CreateAsync(deskDto)).ReturnsAsync(true);
 			var controller = new DesksController(serviceMock.Object);
 
 			var result = await controller.Post(deskDto);
@@ -139,7 +139,7 @@ namespace DeskReserve_Tests
 			var deskDto = new DeskDto { DeskNumber = 1, IsOccupied = true, IsStatic = false };
 			var serviceMock = new Mock<IDeskService>();
 
-			serviceMock.Setup(service => service.CreateOne(deskDto)).ReturnsAsync(false);
+			serviceMock.Setup(service => service.CreateAsync(deskDto)).ReturnsAsync(false);
 			var controller = new DesksController(serviceMock.Object);
 
 			var result = await controller.Post(deskDto);
@@ -154,7 +154,7 @@ namespace DeskReserve_Tests
 		{
 			var id = Guid.NewGuid();
 			var serviceMock = new Mock<IDeskService>();
-			serviceMock.Setup(service => service.DeleteOneAsync(id)).ReturnsAsync(true);
+			serviceMock.Setup(service => service.DeleteAsync(id)).ReturnsAsync(true);
 			var controller = new DesksController(serviceMock.Object);
 
 			var result = await controller.Delete(id);
@@ -169,18 +169,14 @@ namespace DeskReserve_Tests
 			var id = Guid.NewGuid();
 
 			var serviceMock = new Mock<IDeskService>();
-			serviceMock.Setup(service => service.DeleteOneAsync(id)).ThrowsAsync(new EntityNotFoundException());
+			serviceMock.Setup(service => service.DeleteAsync(id)).ThrowsAsync(new EntityNotFoundException());
 
 			var controller = new DesksController(serviceMock.Object);
 
 			var result = await controller.Delete(id) as NotFoundObjectResult;
-			
+
 			Assert.That(result.StatusCode, Is.EqualTo(StatusCodes.Status404NotFound));
 
 		}
 	}
 }
-
-
-
-

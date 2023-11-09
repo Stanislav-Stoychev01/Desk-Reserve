@@ -9,47 +9,47 @@ using DeskReserve.Domain;
 
 namespace DeskReserve.Domain.Service
 {
-    public class DeskService : IDeskService
-    {
-        private readonly IDeskRepository _repository;
+	public class DeskService : IDeskService
+	{
+		private readonly IDeskRepository _repository;
 
-        public DeskService(IDeskRepository repository)
-        {
-            _repository = repository ?? throw new ArgumentNullException(nameof(repository));
-        }
+		public DeskService(IDeskRepository repository)
+		{
+			_repository = repository ?? throw new ArgumentNullException(nameof(repository));
+		}
 
-        public async Task<IEnumerable<Desk>> GetAllAsync()
-        {
-            return await _repository.GetAll();
-        }
+		public async Task<IEnumerable<Desk>> GetAllAsync()
+		{
+			return await _repository.GetAll();
+		}
 
-        public async Task<DeskDto> GetOneAsync(Guid id)
-        {
-            var desk = await _repository.GetById(id);
+		public async Task<DeskDto> GetAsync(Guid id)
+		{
+			var desk = await _repository.GetById(id);
 
-            return desk.ToDeskDto();
-        }
+			return desk.ToDeskDto();
+		}
 
-        public async Task<bool> UpdateOneAsync(Guid id, DeskDto deskDto)
-        {
-            var desk = await _repository.GetById(id) ?? throw new EntityNotFoundException();
+		public async Task<bool> UpdateAsync(Guid id, DeskDto deskDto)
+		{
+			var desk = await _repository.GetById(id) ?? throw new EntityNotFoundException();
 
 			desk.UpdateFromDto(deskDto);
 
 			return await _repository.Update(desk);
-        }
+		}
 
-        public async Task<bool> CreateOne(DeskDto deskDto)
-        {
-            Desk desk = deskDto.ToDesk();
+		public async Task<bool> CreateAsync(DeskDto deskDto)
+		{
+			Desk desk = deskDto.ToDesk();
 
-            return await _repository.Create(desk);
-        }
+			return await _repository.Create(desk);
+		}
 
-        public async Task<bool> DeleteOneAsync(Guid id)
-        {
-            return await _repository.Delete(id);
-        }
-    }
+		public async Task<bool> DeleteAsync(Guid id)
+		{
+			return await _repository.Delete(id);
+		}
+	}
 
 }

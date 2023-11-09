@@ -7,11 +7,11 @@ using DeskReserve.Domain.Service;
 
 namespace DeskReserve.Controllers
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class DesksController : ControllerBase
-    {
-        private readonly IDeskService _service;
+	[Route("api/[controller]")]
+	[ApiController]
+	public class DesksController : ControllerBase
+	{
+		private readonly IDeskService _service;
 
 		public DesksController(IDeskService service)
 		{
@@ -22,25 +22,25 @@ namespace DeskReserve.Controllers
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status404NotFound)]
 		public async Task<ActionResult<IEnumerable<Desk>>> Get()
-        {
+		{
 			var desks = await _service.GetAllAsync();
 
 			return !ReferenceEquals(desks, null) ? Ok(desks) : NotFound();
 		}
 
-        [HttpGet("{id}")]
+		[HttpGet("{id}")]
 		[ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Desk))]
 		[ProducesResponseType(StatusCodes.Status404NotFound)]
 		public async Task<ActionResult<Desk>> Get(Guid id)
-        {
+		{
 			ActionResult result;
 
 			try
 			{
-				var desk = await _service.GetOneAsync(id);
+				var desk = await _service.GetAsync(id);
 				result = Ok(desk);
 			}
-			catch(EntityNotFoundException ex)
+			catch (EntityNotFoundException ex)
 			{
 				result = NotFound(ex);
 			}
@@ -58,7 +58,7 @@ namespace DeskReserve.Controllers
 
 			try
 			{
-				var success = await _service.UpdateOneAsync(id, desk);
+				var success = await _service.UpdateAsync(id, desk);
 				result = Ok(success);
 			}
 			catch (EntityNotFoundException ex)
@@ -74,7 +74,7 @@ namespace DeskReserve.Controllers
 		[ProducesResponseType(StatusCodes.Status409Conflict)]
 		public async Task<ActionResult<Desk>> Post(DeskDto desk)
 		{
-			var success = await _service.CreateOne(desk);
+			var success = await _service.CreateAsync(desk);
 
 			return success ? StatusCode(StatusCodes.Status201Created) : StatusCode(StatusCodes.Status409Conflict);
 		}
@@ -88,10 +88,10 @@ namespace DeskReserve.Controllers
 
 			try
 			{
-				var success = await _service.DeleteOneAsync(id);
+				var success = await _service.DeleteAsync(id);
 				response = NoContent();
 			}
-			catch(EntityNotFoundException ex)
+			catch (EntityNotFoundException ex)
 			{
 				response = NotFound(ex);
 			}

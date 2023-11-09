@@ -3,7 +3,7 @@ using DeskReserve.Domain;
 
 namespace DeskReserve.Mapper
 {
-    public static class DeskMapper
+	public static class DeskMapper
 	{
 		public static DeskDto ToDeskDto(this Desk desk)
 		{

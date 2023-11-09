@@ -3,17 +3,17 @@ using DeskReserve.Domain;
 
 namespace DeskReserve.Domain.Service
 {
-    public interface IDeskService
-    {
-        Task<IEnumerable<Desk>> GetAllAsync();
+	public interface IDeskService
+	{
+		Task<IEnumerable<Desk>> GetAllAsync();
 
-        Task<DeskDto> GetOneAsync(Guid id);
+		Task<DeskDto> GetAsync(Guid id);
 
-        Task<bool> UpdateOneAsync(Guid id, DeskDto deskDto);
+		Task<bool> UpdateAsync(Guid id, DeskDto deskDto);
 
-        Task<bool> CreateOne(DeskDto desk);
+		Task<bool> CreateAsync(DeskDto desk);
 
-        Task<bool> DeleteOneAsync(Guid id);
+		Task<bool> DeleteAsync(Guid id);
 
-    }
+	}
 }
