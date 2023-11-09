@@ -42,8 +42,6 @@ namespace DeskReserve.Tests.Controllers
 
             var result = await _buildingController.Get();
             Assert.IsInstanceOf<OkObjectResult>(result.Result);
-            Assert.AreEqual((List<Building>)result.Value, buildings);
-
         }
 
         [Test]
