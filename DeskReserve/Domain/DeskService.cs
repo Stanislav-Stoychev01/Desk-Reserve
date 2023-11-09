@@ -24,7 +24,7 @@ namespace DeskReserve.Domain
 
 		public async Task<DeskDto> GetOneAsync(Guid id)
 		{
-			var desk = await repository.GetById(id) ?? throw new EntityNotFoundException();
+			var desk = await repository.GetById(id);
 		
 			return desk.ToDeskDto();
 		}

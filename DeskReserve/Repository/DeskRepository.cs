@@ -21,7 +21,7 @@ namespace DeskReserve.Repository
 
 		public async Task<Desk> GetById(Guid id)
 		{
-			return await _context.Desks.FindAsync(id);
+			return await _context.Desks.FindAsync(id) ?? throw new EntityNotFoundException();
 		}
 
 		public async Task<bool> Update(Desk desk)

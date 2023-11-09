@@ -73,14 +73,13 @@ namespace DeskReserve_Tests
 		{
 			var id = Guid.NewGuid();
 			var mockService = new Mock<IDeskService>();
-			mockService.Setup(service => service.GetOneAsync(id)).ReturnsAsync((DeskDto)null);
+			mockService.Setup(service => service.GetOneAsync(id)).ThrowsAsync(new EntityNotFoundException());
 
 			var controller = new DesksController(mockService.Object);
 
 			var result = await controller.Get(id);
-			var resultStatusCode = result.Result as NotFoundResult;
+			var resultStatusCode = result.Result as NotFoundObjectResult;
 
-			Assert.IsInstanceOf<NotFoundResult>(result.Result);
 			Assert.That(resultStatusCode.StatusCode, Is.EqualTo(StatusCodes.Status404NotFound));
 		}
 
@@ -96,11 +95,10 @@ namespace DeskReserve_Tests
 
 			var controller = new DesksController(mockService.Object);
 
-			var result = await controller.Put(id, deskMock);
-			var resultStatusCode = result as OkObjectResult;
+			var result = await controller.Put(id, deskMock) as OkObjectResult;
 
 			Assert.IsInstanceOf<OkObjectResult>(result);
-			Assert.That(resultStatusCode.StatusCode, Is.EqualTo(StatusCodes.Status200OK));
+			Assert.That(result.StatusCode, Is.EqualTo(StatusCodes.Status200OK));
 		}
 
 		[Test]
@@ -110,11 +108,11 @@ namespace DeskReserve_Tests
 			var deskDto = (DeskDto)null;
 
 			var serviceMock = new Mock<IDeskService>();
-			serviceMock.Setup(service => service.UpdateOneAsync(id, deskDto)).ReturnsAsync(false);
+			serviceMock.Setup(service => service.UpdateOneAsync(id, deskDto)).ThrowsAsync(new EntityNotFoundException());
 
 			var controller = new DesksController(serviceMock.Object);
 
-			var result = await controller.Put(id, deskDto) as StatusCodeResult;
+			var result = await controller.Put(id, deskDto) as NotFoundObjectResult;
 
 			Assert.That(result.StatusCode, Is.EqualTo(StatusCodes.Status404NotFound));
 		}
@@ -171,15 +169,13 @@ namespace DeskReserve_Tests
 			var id = Guid.NewGuid();
 
 			var serviceMock = new Mock<IDeskService>();
-			serviceMock.Setup(service => service.DeleteOneAsync(id)).ReturnsAsync(false);
+			serviceMock.Setup(service => service.DeleteOneAsync(id)).ThrowsAsync(new EntityNotFoundException());
 
 			var controller = new DesksController(serviceMock.Object);
 
-			var result = await controller.Delete(id);
-			var resultStatusCode = result as StatusCodeResult;
-
-			Assert.IsNotNull(result);
-			Assert.That(resultStatusCode.StatusCode, Is.EqualTo(StatusCodes.Status404NotFound));
+			var result = await controller.Delete(id) as NotFoundObjectResult;
+			
+			Assert.That(result.StatusCode, Is.EqualTo(StatusCodes.Status404NotFound));
 
 		}
 	}
