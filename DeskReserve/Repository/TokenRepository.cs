@@ -20,16 +20,19 @@ namespace DeskReserve.Repository
                 .Where(rt => rt.UserId == userId)
                 .FirstOrDefaultAsync();
 
-            if (existingToken != null)
+            if (!ReferenceEquals(existingToken,null))
             {
                 existingToken.Token = refreshToken;
             }
             else
             {
+                DateTime dateTimeNow = DateTime.Now;
                 var newToken = new RefreshToken
                 {
                     UserId = userId,
-                    Token = refreshToken
+                    Token = refreshToken,
+                    CreatedAt = dateTimeNow,
+                    ExpiresAt = dateTimeNow.AddHours(24f)
                 };
                 _context.RefreshToken.Add(newToken);
             }
@@ -43,7 +46,7 @@ namespace DeskReserve.Repository
                 .Where(rt => rt.UserId == userId)
                 .FirstOrDefaultAsync();
 
-            if (tokenToRemove != null)
+            if (!ReferenceEquals(tokenToRemove, null))
             {
                 _context.RefreshToken.Remove(tokenToRemove);
                 await _context.SaveChangesAsync();
