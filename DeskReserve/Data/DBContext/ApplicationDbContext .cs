@@ -8,7 +8,6 @@ namespace DeskReserve.Data.DBContext
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) 
         : base(options) { }
 
-        public DbSet<Dog> Dogs { get; set; }
-
+        public DbSet<Floor> Floor { get; set; }
     }
 }
