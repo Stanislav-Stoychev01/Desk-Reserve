@@ -1,5 +1,6 @@
 ﻿using DeskReserve.Data.DBContext.Entity;
 using DeskReserve.Domain;
+using DeskReserve.Exceptions;
 using DeskReserve.Repository;
 
 namespace DeskReserve.Service
@@ -20,7 +21,7 @@ namespace DeskReserve.Service
 
         public async Task<Building> GetBuildingById(Guid id)
         {
-            return await _buildingRepository.GetByIdAsync(id);
+            return await _buildingRepository.GetByIdAsync(id) ;
         }
 
         public async Task<bool> AddNew(BuildingDto building)
@@ -34,33 +35,18 @@ namespace DeskReserve.Service
             bool result;
             var existingBuilding = await _buildingRepository.GetByIdAsync(id);
 
-            if (Equals(existingBuilding, null))
-            {
-                result = false;
-            }
-            else
-            {
-                result = await _buildingRepository.DeleteAsync(existingBuilding); ;
-            }
-
+            result = await _buildingRepository.DeleteAsync(existingBuilding);
             return result;
         }
 
         public async Task<bool> UpdateBuilding(Guid id, BuildingDto building)
         {
             bool result;
-            var existingBuilding = await _buildingRepository.GetByIdAsync(id);
+            var existingBuilding = await _buildingRepository.GetByIdAsync(id) ?? throw new DataNotFound();
 
-            if (Equals(existingBuilding, null))
-            {
-                result = false;
-            }
-            else
-            {
-                var updateBuilding = building.ToBuilding(id);
-                result = await _buildingRepository.UpdateAsync(updateBuilding);
-            }
-
+            var updateBuilding = building.ToBuilding(id);
+            result = await _buildingRepository.UpdateAsync(updateBuilding);
+            
             return result;
         }
     }

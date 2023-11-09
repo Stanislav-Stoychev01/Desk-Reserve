@@ -1,14 +1,9 @@
-﻿using DeskReserve.Controllers;
-using DeskReserve.Data.DBContext.Entity;
+﻿using DeskReserve.Data.DBContext.Entity;
 using DeskReserve.Domain;
+using DeskReserve.Exceptions;
 using DeskReserve.Repository;
 using DeskReserve.Service;
 using Moq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DeskReserve.Tests.Service
 {
@@ -126,6 +121,15 @@ namespace DeskReserve.Tests.Service
                 Floors = 12
             };
 
+            var newBuilding = new Building
+            {
+                BuildingId = guid,
+                City = "City12",
+                StreetAddress = "StreetAddress12",
+                Neighbourhood = "Neighbourhood12",
+                Floors = 12
+            };
+
             _buildingRepositoryMock.Setup(repo => repo.GetByIdAsync(guid)).ReturnsAsync(existingBuilding);
             _buildingRepositoryMock.Setup(repo => repo.UpdateAsync(It.IsAny<Building>())).ReturnsAsync(true);
 
@@ -137,10 +141,11 @@ namespace DeskReserve.Tests.Service
         [Test]
         public async Task Update_BuildingDoesNotExist_ReturnsFalse()
         {
-            _buildingRepositoryMock.Setup(repo => repo.GetByIdAsync(It.IsAny<Guid>())).ReturnsAsync((Building)null);
-            var result = await _buildingService.UpdateBuilding(Guid.NewGuid(), new BuildingDto());
+            var guid = new Guid("3fa85f64-5717-4562-b3fc-2c963f66afa7");
+            _buildingRepositoryMock.Setup(repo => repo.GetByIdAsync(guid)).ThrowsAsync(new DataNotFound());
 
-            Assert.IsFalse(result);
+            AsyncTestDelegate result = () => _buildingService.UpdateBuilding(guid, new BuildingDto());
+            Assert.ThrowsAsync<DataNotFound>(result);
         }
     }
 }

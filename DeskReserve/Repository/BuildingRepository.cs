@@ -1,6 +1,7 @@
 ﻿using DeskReserve.Data.DBContext.Entity;
 using DeskReserve.Data.DBContext;
 using Microsoft.EntityFrameworkCore;
+using DeskReserve.Exceptions;
 
 namespace DeskReserve.Repository
 {
@@ -20,7 +21,7 @@ namespace DeskReserve.Repository
 
         public async Task<Building> GetByIdAsync(Guid id)
         {
-            return await _dbContext.Buildings.FindAsync(id);
+            return await _dbContext.Buildings.FindAsync(id) ?? throw new DataNotFound("Data don't exist");
         }
 
         public async Task<bool> CreateAsync(Building newBuilding)
@@ -39,7 +40,7 @@ namespace DeskReserve.Repository
 
         public async Task<bool> UpdateAsync(Building toUpdate)
         {
-            var buildingItem = await _dbContext.Buildings.FindAsync(toUpdate.BuildingId);
+            var buildingItem = await GetByIdAsync(toUpdate.BuildingId);
             _dbContext.Entry(buildingItem).State = EntityState.Detached;
             _dbContext.Entry(toUpdate).State = EntityState.Modified;
 

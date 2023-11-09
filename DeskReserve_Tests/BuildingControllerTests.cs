@@ -1,6 +1,7 @@
 ﻿using DeskReserve.Controllers;
 using DeskReserve.Data.DBContext.Entity;
 using DeskReserve.Domain;
+using DeskReserve.Exceptions;
 using DeskReserve.Service;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
@@ -44,12 +45,12 @@ namespace DeskReserve.Tests.Controllers
         }
 
         [Test]
-        public async Task Get_NoBuildingsFound_ReturnsNotFoundStatus()
+        public async Task Get_NoBuildingsFound_ReturnsEmptyList()
         {
             _buildingServiceMock.Setup(service => service.GetAll()).ReturnsAsync(new List<Building>());
 
             var result = await _buildingController.Get();
-            Assert.IsInstanceOf<NotFoundResult>(result.Result);
+            Assert.IsInstanceOf<OkObjectResult>(result.Result);
         }
 
         [Test]
@@ -75,10 +76,11 @@ namespace DeskReserve.Tests.Controllers
         [Test]
         public async Task GetById_NonExistingBuildingId_ReturnsNotFoundStatus()
         {
-            _buildingServiceMock.Setup(service => service.GetBuildingById(new Guid("3fa85f64-5717-4562-b3fc-2c963f66afa6"))).ReturnsAsync((Building)null);
+            var id = new Guid("3fa85f64-5717-4562-b3fc-2c963f66afa6");
+            _buildingServiceMock.Setup(service => service.GetBuildingById(id)).ThrowsAsync(new DataNotFound());
 
-            var result = await _buildingController.GetById(Guid.NewGuid());
-            Assert.IsInstanceOf<NotFoundResult>(result.Result);
+            var result = await _buildingController.GetById(id);
+            Assert.IsInstanceOf<NotFoundObjectResult>(result.Result);
         }
 
         [Test]
@@ -95,7 +97,7 @@ namespace DeskReserve.Tests.Controllers
             _buildingServiceMock.Setup(service => service.AddNew(buildingDto)).ReturnsAsync(true);
 
             var result = await _buildingController.Post(buildingDto);
-            Assert.IsInstanceOf<StatusCodeResult>(result.Result);
+            Assert.IsInstanceOf<StatusCodeResult>(result);
         }
 
         [Test]
@@ -112,7 +114,7 @@ namespace DeskReserve.Tests.Controllers
             _buildingServiceMock.Setup(service => service.AddNew(buildingDto)).ReturnsAsync(false);
 
             var result = await _buildingController.Post(buildingDto);
-            Assert.IsInstanceOf<StatusCodeResult>(result.Result);
+            Assert.IsInstanceOf<StatusCodeResult>(result);
         }
 
         [Test]
@@ -122,17 +124,17 @@ namespace DeskReserve.Tests.Controllers
             _buildingServiceMock.Setup(service => service.DeleteBuilding(guid)).ReturnsAsync(true);
 
             var result = await _buildingController.Delete(guid);
-            Assert.IsInstanceOf<OkResult>(result);
+            Assert.IsInstanceOf<OkObjectResult>(result);
         }
 
         [Test]
         public async Task Delete_NonExistingBuildingId_ReturnsNotFoundStatus()
         {
             var guid = new Guid("3fa85f64-5717-4562-b3fc-2c963f66afa6");
-            _buildingServiceMock.Setup(service => service.DeleteBuilding(guid)).ReturnsAsync(false);
+            _buildingServiceMock.Setup(service => service.DeleteBuilding(guid)).ThrowsAsync(new DataNotFound());
 
-            var result = await _buildingController.Delete(Guid.NewGuid());
-            Assert.IsInstanceOf<NotFoundResult>(result);
+            var result = await _buildingController.Delete(guid);
+            Assert.IsInstanceOf<NotFoundObjectResult>(result);
         }
 
         [Test]
@@ -151,7 +153,7 @@ namespace DeskReserve.Tests.Controllers
             _buildingServiceMock.Setup(service => service.UpdateBuilding(id, buildingDto)).ReturnsAsync(true);
 
             var result = await _buildingController.Put(id, buildingDto);
-            Assert.IsInstanceOf<OkResult>(result);
+            Assert.IsInstanceOf<OkObjectResult>(result);
         }
 
         [Test]
@@ -167,10 +169,10 @@ namespace DeskReserve.Tests.Controllers
                 Floors = 12
             };
 
-            _buildingServiceMock.Setup(service => service.UpdateBuilding(id, buildingDto)).ReturnsAsync(false);
+            _buildingServiceMock.Setup(service => service.UpdateBuilding(id, buildingDto)).ThrowsAsync(new DataNotFound());
 
             var result = await _buildingController.Put(id, buildingDto);
-            Assert.IsInstanceOf<StatusCodeResult>(result);
+            Assert.IsInstanceOf<NotFoundObjectResult>(result);
         }
     }
 }
