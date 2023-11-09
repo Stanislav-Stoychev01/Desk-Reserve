@@ -1,6 +1,4 @@
-﻿using DeskReserve.Interfaces;
-
-namespace DeskReserve.Helper
+﻿namespace DeskReserve.Utils
 {
     public static class Extensions
     {

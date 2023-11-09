@@ -1,7 +1,8 @@
 ﻿using DeskReserve.Data.DBContext.Entity;
 using DeskReserve.Interfaces;
 using DeskReserve.Domain;
-using DeskReserve.Helper;
+using DeskReserve.Utils;
+using DeskReserve.Exceptions;
 
 namespace DeskReserve.Services
 {
@@ -56,7 +57,7 @@ namespace DeskReserve.Services
 
         public async Task<bool> DeleteOneAsync(Guid id)
         { 
-            var floorEntity = await _repository.GetById(id);
+            var floorEntity = await _repository.GetById(id) ?? throw new EntityNotFoundException("Floor not found.");
 
             return await _repository.Delete(floorEntity);
         }
