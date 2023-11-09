@@ -1,5 +1,5 @@
-using DeskReserve.Controllers;
 using DeskReserve.Data.DBContext;
+using DeskReserve.Interfaces;
 using DeskReserve.Repository;
 using DeskReserve.Services;
 using Microsoft.EntityFrameworkCore;
@@ -28,6 +28,8 @@ builder.Services.AddScoped<IBuildingService, BuildingService>();
 builder.Services.AddScoped<BuildingController, BuildingController>();
 builder.Services.AddScoped<IBuildingRepository, BuildingRepository>();
 
+builder.Services.AddScoped<IFloorRepository, FloorRepository>();
+builder.Services.AddScoped<IFloorService, FloorService>();
 
 var app = builder.Build();
 
