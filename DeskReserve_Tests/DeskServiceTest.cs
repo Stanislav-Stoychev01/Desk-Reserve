@@ -35,7 +35,6 @@ namespace Desk_Reserve.Tests
 
 			var result = await deskService.GetOneAsync(id);
 
-			//Assert.IsInstanceOf<DeskDto>(result);
 			Assert.IsNotNull(result);
 		}
 
