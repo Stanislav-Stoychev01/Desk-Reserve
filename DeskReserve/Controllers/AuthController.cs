@@ -32,29 +32,29 @@ namespace DeskReserve.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Register(RegisterModel registerModel)
         {
-            /* _logger.LogInformation($"Registration attempt for {registerModel.Email}");
+            _logger.LogInformation($"Registration attempt for {registerModel.Email}");
 
             if(!ModelState.IsValid)
             {
-                BadRequest(ModelState);
+                return BadRequest(ModelState);
             }
 
             try
             {
-                User user = _authService.CreateUser(registerModel);
+                User user = _authService.HashUserPassword(registerModel);
 
-                var result = await _userManager.CreateAsync(user);
+                var result = await _authService.CreateUser(user);
 
-                if(!result.Succeeded)
+                if(!result)
                 {
-                    BadRequest($"User Registration failed");
+                    return BadRequest($"User Registration failed");
                 }
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"Something went wrong in the {nameof(Register)}");
                 return Problem($"Something went wrong in the {nameof(Register)}", statusCode: 500);
-            } */
+            }
 
             return Ok("Registration successful.");
         }

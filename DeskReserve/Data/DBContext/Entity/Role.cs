@@ -9,6 +9,7 @@ namespace DeskReserve.Data.DBContext.Entity
         [Key]
         public Guid RoleId { get; set; }
 
+        [Required]
         public string RoleName { get; set; }
     }
 }

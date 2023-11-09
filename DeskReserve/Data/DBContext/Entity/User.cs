@@ -21,10 +21,10 @@ namespace DeskReserve.Data.DBContext.Entity
         [Required]
         public string PasswordSalt { get; set; }
 
-        public string FirstName { get; set; }
+        //public string FirstName { get; set; }
 
-        public string LastName { get; set; }
+        //public string LastName { get; set; }
 
-        public DateTime CreatedAt { get; set; } = DateTime.Now;
+        //public DateTime CreatedAt { get; set; } = DateTime.Now;
     }
 }

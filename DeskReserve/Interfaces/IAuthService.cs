@@ -9,6 +9,7 @@ namespace DeskReserve.Interfaces
         Task<string> CreateToken();
         Task<string> CreateRefreshToken();
         Task<TokenRequest> VerifyRefreshToken(TokenRequest request);
-        User CreateUser(RegisterModel registerModel);
+        Task<bool> CreateUser(User user);
+        User HashUserPassword(RegisterModel registerModel);
     }
 }

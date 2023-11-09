@@ -1,11 +1,13 @@
 ﻿using DeskReserve.Data.DBContext.Entity;
 using DeskReserve.Domain;
+using DeskReserve.Utils;
 using DeskReserve.Interfaces;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using System.Collections;
 
 namespace DeskReserve.Services
 {
@@ -14,18 +16,15 @@ namespace DeskReserve.Services
         private readonly IUserRepository _userRepository;
         private readonly ITokenRepository _tokenRepository;
         private readonly IConfiguration _configuration;
-        private readonly IMapper _mapper;
         private User _user = new User();
 
         public AuthService(IUserRepository userRepository,
             ITokenRepository tokenRepository,
-            IConfiguration configuration,
-            IMapper mapper)
+            IConfiguration configuration)
         {
             _userRepository = userRepository;
             _tokenRepository = tokenRepository;
             _configuration = configuration;
-            _mapper = mapper;
         }
 
         public async Task<string> CreateToken()
@@ -69,8 +68,8 @@ namespace DeskReserve.Services
 
         private SigningCredentials GetSigningCredentials()
         {
-            var key = Environment.GetEnvironmentVariable("KEY");
-            var secret = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key));
+            var singinKey = Environment.GetEnvironmentVariable("SIGNIN_KEY");
+            var secret = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(singinKey));
 
             return new SigningCredentials(secret, SecurityAlgorithms.HmacSha256);
         }
@@ -78,7 +77,7 @@ namespace DeskReserve.Services
         public async Task<bool> ValidateUser(LoginModel loginModel)
         {
             _user = await _userRepository.GetByEmail(loginModel.Email);
-            var validPassword = ReferenceEquals(_user.PasswordHash, loginModel.Password);
+            var validPassword = VerifyPassword(loginModel.Password, _user.PasswordHash, _user.PasswordSalt);
             return (!ReferenceEquals(_user, null) && validPassword);
         }
 
@@ -115,19 +114,25 @@ namespace DeskReserve.Services
             return null;
         }
 
-        public User CreateUser(RegisterModel registerModel)
+        public async Task<bool> CreateUser(User user)
         {
-            var user = _mapper.MapProperties(registerModel, _user);
+            user.UserId = Guid.NewGuid();
+
+            return await _userRepository.Add(user);
+        }
+
+        public User HashUserPassword(RegisterModel registerModel)
+        {
+            registerModel.MapProperties(_user);
 
             byte[] salt = Encoding.ASCII.GetBytes("mySalt");
             string passwordHash = ComputeHash(registerModel.Password, new SHA256CryptoServiceProvider(), salt);
 
-            user.PasswordHash = passwordHash;
-            user.PasswordSalt = salt.ToString();
+            _user.PasswordHash = passwordHash;
+            _user.PasswordSalt = Encoding.ASCII.GetString(salt);
 
-            return user;
+            return _user;
         }
-
 
         private static string GenerateRandomToken()
         {
@@ -146,6 +151,13 @@ namespace DeskReserve.Services
             Byte[] hashedBytes = algorithm.ComputeHash(saltedInput);
 
             return BitConverter.ToString(hashedBytes);
+        }
+
+        public static bool VerifyPassword(string enteredPassword, string storedHash, string storedSalt)
+        {
+            byte[] salt = Encoding.ASCII.GetBytes(storedSalt);
+            var enteredPasswordHash = ComputeHash(enteredPassword, new SHA256CryptoServiceProvider(), salt);
+            return string.Equals(storedHash, enteredPasswordHash);
         }
     }
 }

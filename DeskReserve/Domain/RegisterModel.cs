@@ -5,7 +5,7 @@ namespace DeskReserve.Domain
     public class RegisterModel
     {
         [Required(ErrorMessage = "User Name is required")]
-        public string Username { get; set; }
+        public string UserName { get; set; }
 
         [EmailAddress]
         [Required(ErrorMessage = "Email is required")]
@@ -14,8 +14,8 @@ namespace DeskReserve.Domain
         [Required(ErrorMessage = "Password is required")]
         public string Password { get; set; }
 
-        public string FirstName { get; set; }
+        // public string FirstName { get; set; }
 
-        public string LastName { get; set; }
+        // public string LastName { get; set; }
     }
 }

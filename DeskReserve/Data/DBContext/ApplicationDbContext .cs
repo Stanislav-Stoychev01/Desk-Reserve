@@ -15,11 +15,5 @@ namespace DeskReserve.Data.DBContext
         public DbSet<Role> Role { get; set; }
 
         public DbSet<RefreshToken> RefreshToken { get; set; }
-
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-
-        }
-
     }
 }

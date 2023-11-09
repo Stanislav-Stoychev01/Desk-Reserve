@@ -31,7 +31,7 @@ namespace DeskReserve.Repository
 
         public async Task<Role> GetRoleById(Guid userId)
         {
-            UserRoles userRoles = await _context.UserRoles.FindAsync(userId);
+            UserRoles userRoles = await _context.UserRoles.Where(ur => ur.UserId == userId).FirstOrDefaultAsync();
             Role role = await _context.Role.FindAsync(userRoles.RoleId);
             return role;
         }
