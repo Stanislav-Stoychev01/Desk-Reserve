@@ -11,5 +11,7 @@ namespace DeskReserve.Data.DBContext
         public DbSet<Building> Buildings { get; set; }
 
         public DbSet<Floor> Floor { get; set; }
+
+        public DbSet<Desk> Desks { get; set; }
     }
 }
