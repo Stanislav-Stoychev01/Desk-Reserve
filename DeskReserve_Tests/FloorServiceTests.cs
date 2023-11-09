@@ -1,7 +1,10 @@
 ﻿using DeskReserve.Data.DBContext.Entity;
 using DeskReserve.Domain;
+using DeskReserve.Exceptions;
 using DeskReserve.Interfaces;
 using DeskReserve.Services;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Moq;
 
 namespace Desk_Reserve.Tests
@@ -74,11 +77,11 @@ namespace Desk_Reserve.Tests
 
             var result = await floorService.UpdateOneAsync(id, floorDto);
 
-            Assert.IsTrue(result); 
+            Assert.IsTrue(result);
         }
 
         [Test]
-        public async Task DeleteOneAsync_ValidId_ReturnsTrue()
+        public async Task DeleteOneAsync_WhenEntityFound_DeletesAndReturnsTrue()
         {
             Guid id = Guid.NewGuid();
             Floor floor = new Floor()
@@ -98,22 +101,19 @@ namespace Desk_Reserve.Tests
         }
 
         [Test]
-        public async Task DeleteOneAsync_InvalidId_ReturnsFalse()
+        public async Task DeleteOneAsync_WhenEntityNotFound_ThrowsEntityNotFoundException()
         {
-            Guid id = Guid.NewGuid();
-            Floor floor = new Floor()
             {
-                FloorId = id,
-            };
+                Guid id = Guid.NewGuid();
+                Floor floor = null;
 
-            var repositoryMock = new Mock<IFloorRepository>();
-            repositoryMock.Setup(repo => repo.Delete(floor)).ReturnsAsync(false);
+                var repositoryMock = new Mock<IFloorRepository>();
+                repositoryMock.Setup(repo => repo.GetById(id)).ReturnsAsync(floor);
 
-            var floorService = new FloorService(repositoryMock.Object);
+                var floorService = new FloorService(repositoryMock.Object);
 
-            var result = await floorService.DeleteOneAsync(id);
-
-            Assert.IsFalse(result);
+                Assert.ThrowsAsync<EntityNotFoundException>(async () => await floorService.DeleteOneAsync(id));
+            }
         }
     }
 }

@@ -6,6 +6,7 @@ using DeskReserve.Interfaces;
 using DeskReserve.Data.DBContext.Entity;
 using DeskReserve.Domain;
 using Microsoft.AspNetCore.Http;
+using DeskReserve.Exceptions;
 
 namespace Desk_Reserve.Tests
 {
@@ -138,7 +139,7 @@ namespace Desk_Reserve.Tests
         }
 
         [Test]
-        public async Task Post_ReturnsStatusCodeCreatedOnFail()
+        public async Task Post_ReturnsStatusCodeBadRequestOnFail()
         {
             var floorDto = new FloorDto { FloorNumber = 1, HasElevator = true, FloorCoveringType = "tiles" };
             var serviceMock = new Mock<IFloorService>();
@@ -146,10 +147,10 @@ namespace Desk_Reserve.Tests
             var controller = new FloorController(serviceMock.Object);
 
             var result = await controller.Post(floorDto);
-            var resultStatusCode = result.Result as StatusCodeResult;
+            var resultObject = result.Result as BadRequestResult;
 
             Assert.IsNotNull(result);
-            Assert.AreEqual(StatusCodes.Status500InternalServerError, resultStatusCode.StatusCode);
+            Assert.AreEqual(400, resultObject.StatusCode);
         }
 
         [Test]
@@ -167,17 +168,19 @@ namespace Desk_Reserve.Tests
         }
 
         [Test]
-        public async Task Delete_ReturnsNotFoundResultOnFail()
+        public async Task Delete_WhenFloorNotFound_ReturnsNotFoundResult()
         {
             var id = Guid.NewGuid();
             var serviceMock = new Mock<IFloorService>();
-            serviceMock.Setup(service => service.DeleteOneAsync(id)).ReturnsAsync(false);
+            serviceMock.Setup(service => service.DeleteOneAsync(id)).ThrowsAsync(new EntityNotFoundException("Floor not found."));
             var controller = new FloorController(serviceMock.Object);
 
             var result = await controller.Delete(id);
 
-            Assert.IsNotNull(result);
-            Assert.IsInstanceOf<NotFoundResult>(result);
+            Assert.IsInstanceOf(typeof(NotFoundObjectResult), result);
+            var notFoundResult = (NotFoundObjectResult)result;
+            Assert.AreEqual(StatusCodes.Status404NotFound, notFoundResult.StatusCode);
+            Assert.AreEqual("Floor not found.", notFoundResult.Value);
         }
     }
 }

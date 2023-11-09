@@ -2,6 +2,7 @@
 using DeskReserve.Interfaces;
 using DeskReserve.Domain;
 using DeskReserve.Data.DBContext.Entity;
+using DeskReserve.Exceptions;
 
 namespace DeskReserve.Controllers
 {
@@ -48,12 +49,12 @@ namespace DeskReserve.Controllers
 
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<FloorDto>> Post(FloorDto floor)
         {
             var success = await _service.CreateOneAsync(floor);
 
-            return success ? StatusCode(StatusCodes.Status201Created) : StatusCode(StatusCodes.Status500InternalServerError);
+            return success ? StatusCode(StatusCodes.Status201Created) : BadRequest();
         }
 
         [HttpDelete("{id}")]
@@ -61,9 +62,15 @@ namespace DeskReserve.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Delete(Guid id)
         {
-            var success = await _service.DeleteOneAsync(id);
-
-            return success ? Ok() : NotFound();
+            try
+            {
+                await _service.DeleteOneAsync(id);
+                return Ok();
+            } 
+            catch (EntityNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
         }
     }
 }
