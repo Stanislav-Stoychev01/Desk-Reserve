@@ -6,6 +6,9 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DeskReserve", "DeskReserve.csproj", "{197D2A6D-F957-426A-8E3F-86442EA1CFA4}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DeskReserve_Tests", "..\DeskReserve_Tests\DeskReserve_Tests.csproj", "{2F6EE9DF-D2B0-47C2-96AA-F7DFB0627F05}"
+	ProjectSection(ProjectDependencies) = postProject
+		{197D2A6D-F957-426A-8E3F-86442EA1CFA4} = {197D2A6D-F957-426A-8E3F-86442EA1CFA4}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
