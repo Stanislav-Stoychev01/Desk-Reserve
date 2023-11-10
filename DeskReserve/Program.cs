@@ -1,6 +1,7 @@
 using DeskReserve.Controllers;
 using DeskReserve.Data.DBContext;
 using DeskReserve.Domain;
+using DeskReserve.Repository;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
@@ -25,11 +26,9 @@ builder.Services.AddCors(options =>
 String connectionString = builder.Configuration["ConnectionStrings:DefaultConnection"];
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connectionString));
 
-builder.Services.AddScoped<DogService, DogService>();
-builder.Services.AddScoped<DogController, DogController>();
-
+builder.Services.AddScoped<IRoomRepository, RoomRepository>();
+builder.Services.AddScoped<RoomsController, RoomsController>();
 builder.Services.AddScoped<IRoomService, RoomService>();
-builder.Services.AddScoped<IRoomController, RoomsController>();
 
 var app = builder.Build();
 

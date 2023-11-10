@@ -10,12 +10,13 @@ using DeskReserve.Data.DBContext.Entity;
 using DeskReserve.Domain;
 using System.Net.Mime;
 using System.Drawing;
+using DeskReserve.Exceptions;
 
 namespace DeskReserve.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class RoomsController : ControllerBase, IRoomController
+    public class RoomsController : ControllerBase
     {
         private readonly IRoomService _roomService;
 
@@ -26,24 +27,34 @@ namespace DeskReserve.Controllers
 
         // GET: api/Rooms
         [HttpGet("list")]
-        public async Task<ActionResult<IEnumerable<Room>>> GetAll()
+		[ProducesResponseType(StatusCodes.Status200OK)]
+		[ProducesResponseType(StatusCodes.Status404NotFound)]
+		public async Task<ActionResult<IEnumerable<Room>>> GetAll()
         {
-            var rooms = await _roomService.GetAllAsync();
+            var rooms = await _roomService.GetAll();
             return Ok(rooms);
         }
 
         // GET: api/Rooms/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Room>> GetById(Guid id)
+		[ProducesResponseType(StatusCodes.Status200OK)]
+		[ProducesResponseType(StatusCodes.Status404NotFound)]
+		public async Task<ActionResult<Room>> GetById(Guid id)
         {
-            var room = await _roomService.GetOneAsync(id);
+            ActionResult result;
+			try
+			{
+				var room = await _roomService.Get(id);
+				result = Ok(room);
+			}
+			catch (EntityNotFoundException ex)
+			{
+				result = NotFound(ex);
+			}
 
-            if (room == null)
-            {
-                return NotFound();
-            }
+			//var room = await _roomService.Get(id);
 
-            return room;
+            return result;
         }
 
 		// PUT: api/Rooms/5
@@ -52,20 +63,33 @@ namespace DeskReserve.Controllers
 		[Consumes(MediaTypeNames.Application.Json)]
 		[ProducesResponseType(StatusCodes.Status204NoContent)]
 		[ProducesResponseType(StatusCodes.Status404NotFound)]
-		public async Task<IActionResult> UpdateOne(Guid id, Room room)
+		public async Task<IActionResult> UpdateOne(Guid id, RoomDto room)
         {
-			var success = await _roomService.UpdateOneAsync(id, room);
+			IActionResult result;
 
-			return success ? NoContent() : NotFound();
+			try
+			{
+				var success = await _roomService.Update(id, room);
+				result = Ok(success);
+			}
+			catch (EntityNotFoundException ex)
+			{
+				result = NotFound(ex);
+			}
+
+			return result;
 		}
 
         // POST: api/Rooms
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost("new")]
-        public async Task<ActionResult<Room>> Create(Room room)
+		[ProducesResponseType(StatusCodes.Status201Created)]
+		[ProducesResponseType(StatusCodes.Status409Conflict)]
+		public async Task<ActionResult<Room>> CreateAsync(RoomDto roomDto)
         {
-			var newRoom = await _roomService.CreateOneAsync(room);
-            return Ok(newRoom);//StatusCode(StatusCodes.Status201Created, newRoom);
+			var success = await _roomService.Create(roomDto);
+
+            return success ? StatusCode(StatusCodes.Status201Created) : StatusCode(StatusCodes.Status409Conflict);
 		}
 
         // DELETE: api/Rooms/5
@@ -74,9 +98,19 @@ namespace DeskReserve.Controllers
 		[ProducesResponseType(StatusCodes.Status404NotFound)]
 		public async Task<IActionResult> Delete(Guid id)
         {
-			var success = await _roomService.DeleteOneAsync(id);
+			IActionResult response;
 
-			return success ? NoContent() : NotFound();
+			try
+			{
+				var success = await _roomService.Delete(id);
+				response = NoContent();
+			}
+			catch (EntityNotFoundException ex)
+			{
+				response = NotFound(ex);
+			}
+
+			return response;
 		}
 
         /*private bool RoomExists(Guid id)

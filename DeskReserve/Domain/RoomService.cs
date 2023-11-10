@@ -1,71 +1,55 @@
-﻿using DeskReserve.Data.DBContext;
-using DeskReserve.Data.DBContext.Entity;
+﻿//using DeskReserve.Data.DBrepository;
+//using DeskReserve.Data.DBrepository.Entity;
 using Microsoft.EntityFrameworkCore;
 using System.Drawing;
+using DeskReserve.Exceptions;
+using DeskReserve.Repository;
+using DeskReserve.Data.DBContext.Entity;
+using RoomReserve.Mapper;
 
 namespace DeskReserve.Domain
 {
 	public class RoomService : IRoomService
 	{
-		private readonly ApplicationDbContext _context;
+		private readonly IRoomRepository _repository;
 
-		public RoomService(ApplicationDbContext context)
+		public RoomService(IRoomRepository repository)
 		{
-			_context = context;
-			_context = context ?? throw new ArgumentNullException(nameof(context));
+			_repository = repository ?? throw new ArgumentNullException(nameof(repository));
 		}
 
 		//public async Task<List<Room>> GetRooms()
-		public async Task<IEnumerable<Room>> GetAllAsync()
+		public async Task<IEnumerable<Room>> GetAll()
 		{
-			return await _context.Rooms.ToListAsync();
+			return await _repository.GetAllAsync();
 		}
 
 		//public async Task<Room> GetRoom(Guid id)
-		public async Task<Room> GetOneAsync(Guid id)
+		public async Task<RoomDto> Get(Guid id)
 		{
-			return await _context.Rooms.FindAsync(id);
+			var room = await _repository.GetOneAsync(id);
+
+			return room.ToRoomDto();
+
 		}
 
-		public async Task<bool> UpdateOneAsync(Guid id, Room Room)
+		public async Task<bool> Update(Guid id, RoomDto roomDto)
 		{
-			if (id != Room.RoomId)
-			{
-				return false;
-			}
-
-			_context.Entry(Room).State = EntityState.Modified;
-
-			try
-			{
-				await _context.SaveChangesAsync();
-				return true;
-			}
-			catch (DbUpdateConcurrencyException)
-			{
-				return false;
-			}
+			var room = await _repository.GetOneAsync(id) ?? throw new EntityNotFoundException();
+			room.UpdateFromDto(roomDto);
+			return await _repository.UpdateOneAsync(room);
 		}
 
-		public async Task<Room> CreateOneAsync(Room Room)
+		public async Task<bool> Create(RoomDto roomDto)
 		{
-			_context.Rooms.Add(Room);
-			await _context.SaveChangesAsync();
-			return Room;
+			Room room = roomDto.ToRoom();
+			return await _repository.CreateOneAsync(room);
 		}
 
-		public async Task<bool> DeleteOneAsync(Guid id)
+		public async Task<bool> Delete(Guid id)
 		{
-			var Room = await _context.Rooms.FindAsync(id);
+			return await _repository.DeleteOneAsync(id);
 
-			if (Room == null)
-			{
-				return false;
-			}
-
-			_context.Rooms.Remove(Room);
-			await _context.SaveChangesAsync();
-			return true;
 		}
 	}
 }
