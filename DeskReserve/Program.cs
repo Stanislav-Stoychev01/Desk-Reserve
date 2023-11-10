@@ -3,9 +3,10 @@ using DeskReserve.Interfaces;
 using DeskReserve.Repository;
 using DeskReserve.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using DeskReserve.Domain.Service;
+using DeskReserve.Mapper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using System.Text;
 
 const String CorsDisablePolicy = "AllowAnyOrigin";
 var builder = WebApplication.CreateBuilder(args);
@@ -28,10 +29,17 @@ builder.Services.AddCors(options =>
 String connectionString = builder.Configuration["ConnectionStrings:DefaultConnection"];
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connectionString));
 
+builder.Services.AddScoped<IDeskService, DeskService>();
+builder.Services.AddScoped<DesksController, DesksController>();
+builder.Services.AddScoped<IDeskRepository, DeskRepository>();
+builder.Services.AddScoped<IBuildingService, BuildingService>();
+builder.Services.AddScoped<BuildingController, BuildingController>();
+builder.Services.AddScoped<IBuildingRepository, BuildingRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<ITokenRepository, TokenRepository>();
 builder.Services.AddScoped<IAuthService, AuthService>();
-
+builder.Services.AddScoped<IFloorRepository, FloorRepository>();
+builder.Services.AddScoped<IFloorService, FloorService>();
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -53,6 +61,7 @@ builder.Services.AddAuthentication(options =>
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:Secret"]))
     };
 });
+
 
 var app = builder.Build();
 
