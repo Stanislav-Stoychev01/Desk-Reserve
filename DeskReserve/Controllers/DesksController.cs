@@ -2,7 +2,7 @@
 using DeskReserve.Data.DBContext.Entity;
 using DeskReserve.Domain;
 using System.Net.Mime;
-using DeskReserve.Exception;
+using DeskReserve.Exceptions;
 using DeskReserve.Domain.Service;
 
 namespace DeskReserve.Controllers
