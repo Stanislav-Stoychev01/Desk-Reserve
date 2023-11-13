@@ -16,7 +16,9 @@
       "launchUrl": "swagger",
       "applicationUrl": "https://localhost:7218;http://localhost:5132",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "SIGNIN_KEY": "MyPersonalSignInKey",
+        "KID": "f58890d19"
       }
     },
     "IIS Express": {

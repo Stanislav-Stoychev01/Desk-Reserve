@@ -3,6 +3,7 @@ using DeskReserve.Interfaces;
 using DeskReserve.Domain;
 using DeskReserve.Data.DBContext.Entity;
 using DeskReserve.Exceptions;
+using Microsoft.AspNetCore.Authorization;
 
 namespace DeskReserve.Controllers
 {
@@ -18,6 +19,7 @@ namespace DeskReserve.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<IEnumerable<Floor>>> Get()

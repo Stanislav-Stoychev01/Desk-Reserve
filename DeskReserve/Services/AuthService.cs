@@ -7,7 +7,8 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
-using System.Collections;
+using DeskReserve.Exceptions;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace DeskReserve.Services
 {
@@ -30,7 +31,7 @@ namespace DeskReserve.Services
         public async Task<string> CreateToken()
         {
             var signingCredentials = GetSigningCredentials();
-            var claims = await GetClaims();
+            var claims = await CreateClaims();
             var token = GenerateTokenOptions(signingCredentials, claims);
 
             return new JwtSecurityTokenHandler().WriteToken(token);
@@ -39,8 +40,7 @@ namespace DeskReserve.Services
         private JwtSecurityToken GenerateTokenOptions(SigningCredentials signingCredentials, List<Claim> claims)
         {
             var jwtSettings = _configuration.GetSection("Jwt");
-            var expiration = DateTime.Now.AddMinutes(Convert.ToDouble(
-                jwtSettings.GetSection("lifetime").Value));
+            var expiration = DateTime.Now.AddMinutes(60);
 
             var token = new JwtSecurityToken(
                 issuer: jwtSettings.GetSection("Issuer").Value,
@@ -52,7 +52,7 @@ namespace DeskReserve.Services
             return token;
         }
 
-        private async Task<List<Claim>> GetClaims()
+        private async Task<List<Claim>> CreateClaims()
         {
             var claims = new List<Claim>
             {
@@ -69,49 +69,30 @@ namespace DeskReserve.Services
         private SigningCredentials GetSigningCredentials()
         {
             var singinKey = Environment.GetEnvironmentVariable("SIGNIN_KEY");
+            var kid = Environment.GetEnvironmentVariable("KID");
             var secret = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(singinKey));
-
-            return new SigningCredentials(secret, SecurityAlgorithms.HmacSha256);
+            secret.KeyId = kid;
+            return new SigningCredentials(secret, SecurityAlgorithms.HmacSha256Signature);
         }
 
         public async Task<bool> ValidateUser(LoginModel loginModel)
         {
-            _user = await _userRepository.GetByEmail(loginModel.Email);
+            try
+            {
+                _user = await _userRepository.GetByEmail(loginModel.Email) ?? throw new EntityNotFoundException();
+            } 
+            catch (Exception ex)
+            {
+                return false;
+            }
+
             var validPassword = VerifyPassword(loginModel.Password, _user.PasswordHash, _user.PasswordSalt);
             return (!ReferenceEquals(_user, null) && validPassword);
         }
 
-        public async Task<string> CreateRefreshToken()
+        public async Task<bool> ChangeUserPassword(ChangePasswordModel changePasswordModel)
         {
-            var newRefreshToken = GenerateRandomToken();
-
-            await _tokenRepository.RemoveRefreshToken(_user.UserId);
-            await _tokenRepository.SaveRefreshToken(_user.UserId, newRefreshToken);
-
-            return newRefreshToken;
-        }
-
-        public async Task<TokenRequest> VerifyRefreshToken(TokenRequest request)
-        {
-            var jwtSecurityTokenHandler = new JwtSecurityTokenHandler();
-            var tokenContent = jwtSecurityTokenHandler.ReadJwtToken(request.Token);
-            var email = tokenContent.Claims.ToList().FirstOrDefault(q => q.Type == ClaimTypes.Email)?.Value;
-            _user = await _userRepository.GetByEmail(email);
-            try
-            {
-                var isValid = await _tokenRepository.VerifyUserToken(_user.UserId, request.RefreshToken);
-                if (isValid)
-                {
-                    return new TokenRequest { Token = await CreateToken(), RefreshToken = await CreateRefreshToken() };
-                }
-
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-
-            return null;
+            return false;
         }
 
         public async Task<bool> CreateUser(User user)
@@ -119,6 +100,13 @@ namespace DeskReserve.Services
             user.UserId = Guid.NewGuid();
 
             return await _userRepository.Add(user);
+        }
+
+        public async Task<bool> UpdateUser(RegisterModel newUserInfo)
+        {
+            _user = await _userRepository.GetByEmail(newUserInfo.Email) ?? throw new EntityNotFoundException();
+
+            return await _userRepository.Update(HashUserPassword(newUserInfo));
         }
 
         public User HashUserPassword(RegisterModel registerModel)
@@ -132,6 +120,16 @@ namespace DeskReserve.Services
             _user.PasswordSalt = Encoding.ASCII.GetString(salt);
 
             return _user;
+        }
+
+        public async Task<string> CreateRefreshToken()
+        {
+            var newRefreshToken = GenerateRandomToken();
+
+            await _tokenRepository.RemoveRefreshToken(_user.UserId);
+            await _tokenRepository.SaveRefreshToken(_user.UserId, newRefreshToken);
+
+            return newRefreshToken;
         }
 
         private static string GenerateRandomToken()
@@ -153,11 +151,37 @@ namespace DeskReserve.Services
             return BitConverter.ToString(hashedBytes);
         }
 
+
         public static bool VerifyPassword(string enteredPassword, string storedHash, string storedSalt)
         {
             byte[] salt = Encoding.ASCII.GetBytes(storedSalt);
             var enteredPasswordHash = ComputeHash(enteredPassword, new SHA256CryptoServiceProvider(), salt);
             return string.Equals(storedHash, enteredPasswordHash);
+        }
+
+        public IEnumerable<Claim> GetAllClaimsFromToken(string token)
+        {
+            IEnumerable<Claim> claims;
+
+            try
+            {
+                var jsonToken = ReadToken(token.Replace("Bearer ", string.Empty)) ?? throw new Exception();
+                claims = jsonToken.Claims;
+            }
+            catch (Exception e)
+            {
+                claims = null;
+            }
+
+            return claims;
+        }
+
+        public static JwtSecurityToken ReadToken(string jwtToken)
+        {
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var jsonToken = tokenHandler.ReadToken(jwtToken) as JwtSecurityToken;
+
+            return jsonToken;
         }
     }
 }

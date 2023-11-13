@@ -1,9 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using DeskReserve.Data.DBContext.Entity;
 using DeskReserve.Domain;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
 using DeskReserve.Interfaces;
+using Microsoft.Extensions.Primitives;
+using System.Security.Claims;
 
 namespace DeskReserve.Controllers
 {
@@ -11,7 +12,6 @@ namespace DeskReserve.Controllers
     [ApiController]
     public class AccountController : ControllerBase
     {
-        private readonly SignInManager<User> _signInManager;
         private readonly ILogger<AccountController> _logger;
         private readonly IAuthService _authService;
         private readonly IConfiguration _configuration;
@@ -76,10 +76,11 @@ namespace DeskReserve.Controllers
             {
                 if (!await _authService.ValidateUser(loginModel))
                 {
+                    _logger.LogError("Invalid email and password combination.");
                     return Unauthorized();
                 }
 
-                return Accepted(new TokenRequest { Token = await _authService.CreateToken(), RefreshToken = await _authService.CreateRefreshToken() });
+                return Accepted(new AuthenticatedResponse { Token = await _authService.CreateToken() });
             }
             catch (Exception ex)
             {
@@ -92,16 +93,67 @@ namespace DeskReserve.Controllers
         [HttpPost("logout")]
         public async Task<IActionResult> Logout()
         {
-            //TODO: Implement user logout logic
-
-            return Ok("Logged out successfully.");
+            try
+            {
+                return Ok("Logged out successfully.");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Something went wrong during logout in the {nameof(Logout)}");
+                return Problem($"Something went wrong during logout in the {nameof(Logout)}", statusCode: 500);
+            }
         }
 
         [Authorize]
         [HttpPost("change-password")]
-        public async Task<IActionResult> ChangePassword(ChangePasswordModel model)
+        public async Task<IActionResult> ChangePassword(ChangePasswordModel changePasswordModel)
         {
-            //TODO: Implement user change-password
+            if (changePasswordModel.NewPassword != changePasswordModel.ConfirmNewPassword)
+            {
+                return BadRequest("Passwords don't match");
+            }
+
+            Request.Headers.TryGetValue("Authorization", out StringValues jwtToken);
+            List<Claim> claims = null;
+
+            try
+            {
+                claims = _authService.GetAllClaimsFromToken(jwtToken).ToList() ?? throw new NullReferenceException();
+            }
+            catch (Exception ex)
+            { 
+                _logger.LogError(ex, "Could not get all claims Token from passed token");
+                return Problem($"Something Went Wrong in the {nameof(ChangePassword)}", statusCode: 500);
+            }
+
+            LoginModel loginModel = new LoginModel()
+            {
+                Email = claims.Where(c => c.Type == ClaimTypes.Email).FirstOrDefault()?.Value,
+                Password = changePasswordModel.CurrentPassword
+            };
+
+            if (!await _authService.ValidateUser(loginModel))
+            {
+                _logger.LogError("Invalid password.");
+                return Unauthorized();
+            }
+
+            RegisterModel newUser = new RegisterModel()
+            {
+                UserName = claims.Where(c => c.Type == ClaimTypes.Name).FirstOrDefault()?.Value,
+                Email = loginModel.Email,
+                Password = loginModel.Password,
+            };
+
+            try
+            {
+                await _authService.UpdateUser(newUser);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, ex.Message);
+                return Problem($"Something Went Wrong in the {nameof(ChangePassword)}", statusCode: 500);
+            }
 
             return Ok("Password changed successfully.");
         }
