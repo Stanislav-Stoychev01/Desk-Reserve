@@ -1,6 +1,5 @@
 ﻿using DeskReserve.Data.DBContext.Entity;
 using DeskReserve.Domain;
-using DeskReserve.Utils;
 using DeskReserve.Interfaces;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -8,24 +7,53 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using DeskReserve.Exceptions;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+using DeskReserve.Utils;
 
 namespace DeskReserve.Services
 {
     public class AuthService : IAuthService
     {
         private readonly IUserRepository _userRepository;
+        private readonly IUserRolesRepository _userRolesRepository;
         private readonly ITokenRepository _tokenRepository;
         private readonly IConfiguration _configuration;
         private User _user = new User();
 
         public AuthService(IUserRepository userRepository,
+            IUserRolesRepository userRolesRepository,
             ITokenRepository tokenRepository,
             IConfiguration configuration)
         {
             _userRepository = userRepository;
+            _userRolesRepository = userRolesRepository;
             _tokenRepository = tokenRepository;
             _configuration = configuration;
+        }
+
+        public async Task<bool> CreateUser(RegisterModel regigerModel, string passwordHash, string salt)
+        {
+            regigerModel.MapProperties(_user);
+            _user.UserId = Guid.NewGuid();
+            _user.PasswordHash = passwordHash;
+            _user.PasswordSalt = salt;
+
+            Guid roleId = await _userRolesRepository.GetRoleIdByRoleName("User");
+            UserRole userRole = new UserRole()
+            {
+                UserRolesId = Guid.NewGuid(),
+                UserId = _user.UserId,
+                RoleId = roleId
+            };
+            try
+            {
+                await _userRolesRepository.AddUserRole(userRole);
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+
+            return await _userRepository.Add(_user);
         }
 
         public async Task<string> CreateToken()
@@ -60,7 +88,7 @@ namespace DeskReserve.Services
                 new Claim(ClaimTypes.Name, _user.UserName)
             };
 
-            var role = await _userRepository.GetRoleById(_user.UserId);
+            var role = await _userRolesRepository.GetRoleByUserId(_user.UserId);
             claims.Add(new Claim(ClaimTypes.Role, role.RoleName));
 
             return claims;
@@ -90,36 +118,23 @@ namespace DeskReserve.Services
             return (!ReferenceEquals(_user, null) && validPassword);
         }
 
-        public async Task<bool> ChangeUserPassword(ChangePasswordModel changePasswordModel)
+        public async Task<bool> ChangeUserPassword(string userEmail, ChangePasswordModel changePasswordModel)
         {
-            return false;
-        }
+            try
+            {
+                _user = await _userRepository.GetByEmail(userEmail) ?? throw new EntityNotFoundException();
 
-        public async Task<bool> CreateUser(User user)
-        {
-            user.UserId = Guid.NewGuid();
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
 
-            return await _userRepository.Add(user);
-        }
+            var passwordHashAndSalt = HashUserPassword(changePasswordModel.NewPassword);
+            _user.PasswordHash = passwordHashAndSalt.Item1;
+            _user.PasswordSalt = passwordHashAndSalt.Item2;
 
-        public async Task<bool> UpdateUser(RegisterModel newUserInfo)
-        {
-            _user = await _userRepository.GetByEmail(newUserInfo.Email) ?? throw new EntityNotFoundException();
-
-            return await _userRepository.Update(HashUserPassword(newUserInfo));
-        }
-
-        public User HashUserPassword(RegisterModel registerModel)
-        {
-            registerModel.MapProperties(_user);
-
-            byte[] salt = Encoding.ASCII.GetBytes("mySalt");
-            string passwordHash = ComputeHash(registerModel.Password, new SHA256CryptoServiceProvider(), salt);
-
-            _user.PasswordHash = passwordHash;
-            _user.PasswordSalt = Encoding.ASCII.GetString(salt);
-
-            return _user;
+            return await _userRepository.Update(_user);
         }
 
         public async Task<string> CreateRefreshToken()
@@ -132,31 +147,15 @@ namespace DeskReserve.Services
             return newRefreshToken;
         }
 
-        private static string GenerateRandomToken()
+        public Tuple<string, string> HashUserPassword(string password)
         {
-            return Guid.NewGuid().ToString("N");
-        }
+            string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            Random random = new Random();
+            string randomString = new string(Enumerable.Repeat(chars, 10).Select(s => s[random.Next(s.Length)]).ToArray());
+            byte[] salt = Encoding.ASCII.GetBytes(randomString);
+            string passwordHash = ComputeHash(password, new SHA256CryptoServiceProvider(), salt);
 
-        public static string ComputeHash(string input, HashAlgorithm algorithm, Byte[] salt)
-        {
-            Byte[] inputBytes = Encoding.UTF8.GetBytes(input);
-
-            // Combine salt and input bytes
-            Byte[] saltedInput = new Byte[salt.Length + inputBytes.Length];
-            salt.CopyTo(saltedInput, 0);
-            inputBytes.CopyTo(saltedInput, salt.Length);
-
-            Byte[] hashedBytes = algorithm.ComputeHash(saltedInput);
-
-            return BitConverter.ToString(hashedBytes);
-        }
-
-
-        public static bool VerifyPassword(string enteredPassword, string storedHash, string storedSalt)
-        {
-            byte[] salt = Encoding.ASCII.GetBytes(storedSalt);
-            var enteredPasswordHash = ComputeHash(enteredPassword, new SHA256CryptoServiceProvider(), salt);
-            return string.Equals(storedHash, enteredPasswordHash);
+            return new Tuple<string, string>(passwordHash, Encoding.ASCII.GetString(salt));
         }
 
         public IEnumerable<Claim> GetAllClaimsFromToken(string token)
@@ -174,6 +173,31 @@ namespace DeskReserve.Services
             }
 
             return claims;
+        }
+
+        private static string GenerateRandomToken()
+        {
+            return Guid.NewGuid().ToString("N");
+        }
+
+        public static string ComputeHash(string input, HashAlgorithm algorithm, Byte[] salt)
+        {
+            Byte[] inputBytes = Encoding.UTF8.GetBytes(input);
+
+            Byte[] saltedInput = new Byte[salt.Length + inputBytes.Length];
+            salt.CopyTo(saltedInput, 0);
+            inputBytes.CopyTo(saltedInput, salt.Length);
+
+            Byte[] hashedBytes = algorithm.ComputeHash(saltedInput);
+
+            return BitConverter.ToString(hashedBytes);
+        }
+
+        public static bool VerifyPassword(string enteredPassword, string storedHash, string storedSalt)
+        {
+            byte[] salt = Encoding.ASCII.GetBytes(storedSalt);
+            var enteredPasswordHash = ComputeHash(enteredPassword, new SHA256CryptoServiceProvider(), salt);
+            return string.Equals(storedHash, enteredPasswordHash);
         }
 
         public static JwtSecurityToken ReadToken(string jwtToken)

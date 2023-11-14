@@ -2,6 +2,7 @@
 using DeskReserve.Domain;
 using DeskReserve.Exceptions;
 using DeskReserve.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DeskReserve.Controllers
@@ -17,6 +18,7 @@ namespace DeskReserve.Controllers
             _buildingService = buildingService ?? throw new ArgumentNullException(nameof(buildingService));
         }
 
+        [Authorize]
         [HttpGet]
         public async Task<ActionResult<List<Building>>> Get()
         {
@@ -35,6 +37,7 @@ namespace DeskReserve.Controllers
             return result;
         }
 
+        [Authorize]
         [HttpGet("{id}")]
         public async Task<ActionResult<Building>> GetById(Guid id)
         {
@@ -57,6 +60,7 @@ namespace DeskReserve.Controllers
             return result;
         }
 
+        [Authorize]
         [HttpPost]
         public async Task<IActionResult> Post(BuildingDto building)
         {
@@ -75,6 +79,7 @@ namespace DeskReserve.Controllers
             return result;
         }
 
+        [Authorize]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
@@ -97,6 +102,7 @@ namespace DeskReserve.Controllers
             return result;
         }
 
+        [Authorize]
         [HttpPut("{id}")]
         public async Task<IActionResult> Put(Guid id, BuildingDto building)
         {

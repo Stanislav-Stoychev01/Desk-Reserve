@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using DeskReserve.Data.DBContext.Entity;
 using DeskReserve.Domain;
 using Microsoft.AspNetCore.Authorization;
 using DeskReserve.Interfaces;
@@ -41,9 +40,9 @@ namespace DeskReserve.Controllers
 
             try
             {
-                User user = _authService.HashUserPassword(registerModel);
+                Tuple<string, string> passwordHashAndSalt = _authService.HashUserPassword(registerModel.Password);
 
-                var result = await _authService.CreateUser(user);
+                var result = await _authService.CreateUser(registerModel, passwordHashAndSalt.Item1, passwordHashAndSalt.Item2);
 
                 if(!result)
                 {
@@ -91,6 +90,8 @@ namespace DeskReserve.Controllers
 
         [Authorize]
         [HttpPost("logout")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Logout()
         {
             try
@@ -106,6 +107,10 @@ namespace DeskReserve.Controllers
 
         [Authorize]
         [HttpPost("change-password")]
+        [ProducesResponseType(StatusCodes.Status202Accepted)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> ChangePassword(ChangePasswordModel changePasswordModel)
         {
             if (changePasswordModel.NewPassword != changePasswordModel.ConfirmNewPassword)
@@ -126,28 +131,22 @@ namespace DeskReserve.Controllers
                 return Problem($"Something Went Wrong in the {nameof(ChangePassword)}", statusCode: 500);
             }
 
+            string userEmail = claims.Where(c => c.Type == ClaimTypes.Email).FirstOrDefault()?.Value;
             LoginModel loginModel = new LoginModel()
             {
-                Email = claims.Where(c => c.Type == ClaimTypes.Email).FirstOrDefault()?.Value,
+                Email = userEmail,
                 Password = changePasswordModel.CurrentPassword
             };
 
             if (!await _authService.ValidateUser(loginModel))
             {
-                _logger.LogError("Invalid password.");
+                _logger.LogError("Current password does not match.");
                 return Unauthorized();
             }
 
-            RegisterModel newUser = new RegisterModel()
-            {
-                UserName = claims.Where(c => c.Type == ClaimTypes.Name).FirstOrDefault()?.Value,
-                Email = loginModel.Email,
-                Password = loginModel.Password,
-            };
-
             try
             {
-                await _authService.UpdateUser(newUser);
+                await _authService.ChangeUserPassword(userEmail, changePasswordModel);
             }
             catch (Exception ex)
             {

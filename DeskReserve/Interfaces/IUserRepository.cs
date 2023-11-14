@@ -8,14 +8,12 @@ namespace DeskReserve.Interfaces
 
         Task<User> GetById(Guid id);
 
-        Task<Role> GetRoleById(Guid userId);
-
         Task<User> GetByEmail(string email);
 
         Task<bool> Add(User user);
 
         Task<bool> Update(User user);
 
-        Task<bool> Delete(Guid id);
+        Task<bool> Delete(User user);
     }
 }

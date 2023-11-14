@@ -4,6 +4,7 @@ using DeskReserve.Domain;
 using System.Net.Mime;
 using DeskReserve.Exceptions;
 using DeskReserve.Domain.Service;
+using Microsoft.AspNetCore.Authorization;
 
 namespace DeskReserve.Controllers
 {
@@ -18,7 +19,8 @@ namespace DeskReserve.Controllers
 			_service = service ?? throw new ArgumentNullException(nameof(service));
 		}
 
-		[HttpGet]
+        [Authorize]
+        [HttpGet]
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status404NotFound)]
 		public async Task<ActionResult<IEnumerable<Desk>>> Get()
@@ -28,7 +30,8 @@ namespace DeskReserve.Controllers
 			return !ReferenceEquals(desks, null) ? Ok(desks) : NotFound();
 		}
 
-		[HttpGet("{id}")]
+        [Authorize]
+        [HttpGet("{id}")]
 		[ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Desk))]
 		[ProducesResponseType(StatusCodes.Status404NotFound)]
 		public async Task<ActionResult<Desk>> Get(Guid id)
@@ -48,7 +51,8 @@ namespace DeskReserve.Controllers
 			return result;
 		}
 
-		[HttpPut("{id}")]
+        [Authorize]
+        [HttpPut("{id}")]
 		[Consumes(MediaTypeNames.Application.Json)]
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -69,7 +73,8 @@ namespace DeskReserve.Controllers
 			return result;
 		}
 
-		[HttpPost]
+        [Authorize]
+        [HttpPost]
 		[ProducesResponseType(StatusCodes.Status201Created)]
 		[ProducesResponseType(StatusCodes.Status409Conflict)]
 		public async Task<ActionResult<Desk>> Post(DeskDto desk)
@@ -79,7 +84,8 @@ namespace DeskReserve.Controllers
 			return success ? StatusCode(StatusCodes.Status201Created) : StatusCode(StatusCodes.Status409Conflict);
 		}
 
-		[HttpDelete("{id}")]
+        [Authorize]
+        [HttpDelete("{id}")]
 		[ProducesResponseType(StatusCodes.Status204NoContent)]
 		[ProducesResponseType(StatusCodes.Status404NotFound)]
 		public async Task<IActionResult> Delete(Guid id)

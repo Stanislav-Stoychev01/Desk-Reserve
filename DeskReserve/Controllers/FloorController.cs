@@ -18,8 +18,8 @@ namespace DeskReserve.Controllers
             _service = service ?? throw new ArgumentNullException(nameof(service));
         }
 
+        [Authorize(Roles ="User")]
         [HttpGet]
-        [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<IEnumerable<Floor>>> Get()
@@ -29,6 +29,7 @@ namespace DeskReserve.Controllers
             return !ReferenceEquals(floors, null) ? Ok(floors) : NotFound();
         }
 
+        [Authorize]
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -39,6 +40,7 @@ namespace DeskReserve.Controllers
             return !ReferenceEquals(floor, null) ? Ok(floor) : NotFound();
         }
 
+        [Authorize]
         [HttpPut("{id}/edit")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -49,6 +51,7 @@ namespace DeskReserve.Controllers
             return success ? Ok() : StatusCode(StatusCodes.Status500InternalServerError);
         }
 
+        [Authorize]
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -59,6 +62,7 @@ namespace DeskReserve.Controllers
             return success ? StatusCode(StatusCodes.Status201Created) : BadRequest();
         }
 
+        [Authorize]
         [HttpDelete("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]

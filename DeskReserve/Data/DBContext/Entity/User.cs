@@ -25,6 +25,7 @@ namespace DeskReserve.Data.DBContext.Entity
 
         //public string LastName { get; set; }
 
-        //public DateTime CreatedAt { get; set; } = DateTime.Now;
+        [Required]
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
     }
 }
