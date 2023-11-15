@@ -4,6 +4,9 @@ using Microsoft.AspNetCore.Authorization;
 using DeskReserve.Interfaces;
 using Microsoft.Extensions.Primitives;
 using System.Security.Claims;
+using DeskReserve.Utils;
+using DeskReserve.Exceptions;
+using DeskReserve.Data.DBContext.Entity;
 
 namespace DeskReserve.Controllers
 {
@@ -40,7 +43,7 @@ namespace DeskReserve.Controllers
 
             try
             {
-                Tuple<string, string> passwordHashAndSalt = _authService.HashUserPassword(registerModel.Password);
+                Tuple<string, string> passwordHashAndSalt = SecurityUtils.HashUserPassword(registerModel.Password);
 
                 var result = await _authService.CreateUser(registerModel, passwordHashAndSalt.Item1, passwordHashAndSalt.Item2);
 
@@ -96,6 +99,7 @@ namespace DeskReserve.Controllers
         {
             try
             {
+                //TODO: clear refresh token from db
                 return Ok("Logged out successfully.");
             }
             catch (Exception ex)
@@ -123,7 +127,7 @@ namespace DeskReserve.Controllers
 
             try
             {
-                claims = _authService.GetAllClaimsFromToken(jwtToken).ToList() ?? throw new NullReferenceException();
+                claims = SecurityUtils.GetAllClaimsFromToken(jwtToken).ToList() ?? throw new ClaimsNotSetException();
             }
             catch (Exception ex)
             { 
@@ -155,6 +159,35 @@ namespace DeskReserve.Controllers
             }
 
             return Ok("Password changed successfully.");
+        }
+
+        [Authorize]
+        [HttpPut("user/{id}/role")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> ChnagePermissions(Guid id, [FromBody] string newRoleName)
+        {
+            Role userRole = null;
+            try
+            {
+                userRole = await _authService.GetRole(id);
+                if (String.Equals(userRole.RoleName, newRoleName))
+                {
+                    return Ok();
+                }
+
+                userRole.RoleName = newRoleName;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, ex.Message);
+                return Problem($"Something Went Wrong in the {nameof(ChnagePermissions)}", statusCode: 500);
+            }
+
+            var success = await _authService.UpdateRole(userRole);
+
+            return success ? Ok($"User role updated to {newRoleName}") : BadRequest();
         }
     }
 }

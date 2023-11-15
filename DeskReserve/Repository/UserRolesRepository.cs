@@ -63,6 +63,13 @@ namespace DeskReserve.Repository
             return await _context.SaveChangesAsync() > 0;
         }
 
+        public async Task<bool> Update(Role role)
+        {
+            _context.Entry(role).State = EntityState.Modified;
+
+            return await _context.SaveChangesAsync() > 0;
+        }
+
         public async Task<bool> Delete(UserRole userRole)
         {
             _context.UserRoles.Remove(userRole);

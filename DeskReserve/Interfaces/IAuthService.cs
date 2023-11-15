@@ -11,7 +11,8 @@ namespace DeskReserve.Interfaces
         Task<string> CreateToken();
         Task<string> CreateRefreshToken();
         Task<bool> ChangeUserPassword(string userEmail, ChangePasswordModel changePasswordModel);
-        Tuple<string, string> HashUserPassword(string password);
-        IEnumerable<Claim> GetAllClaimsFromToken(string token);
+        Task<Role> GetRole(Guid userId);
+        Task<User> GetUser(Guid userId);
+        Task<bool> UpdateRole(Role role);
     }
 }

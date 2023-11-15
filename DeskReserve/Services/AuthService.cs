@@ -4,8 +4,6 @@ using DeskReserve.Interfaces;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Security.Cryptography;
-using System.Text;
 using DeskReserve.Exceptions;
 using DeskReserve.Utils;
 
@@ -44,6 +42,7 @@ namespace DeskReserve.Services
                 UserId = _user.UserId,
                 RoleId = roleId
             };
+
             try
             {
                 await _userRolesRepository.AddUserRole(userRole);
@@ -58,7 +57,7 @@ namespace DeskReserve.Services
 
         public async Task<string> CreateToken()
         {
-            var signingCredentials = GetSigningCredentials();
+            var signingCredentials = SecurityUtils.GetSigningCredentials();
             var claims = await CreateClaims();
             var token = GenerateTokenOptions(signingCredentials, claims);
 
@@ -88,19 +87,10 @@ namespace DeskReserve.Services
                 new Claim(ClaimTypes.Name, _user.UserName)
             };
 
-            var role = await _userRolesRepository.GetRoleByUserId(_user.UserId);
+            var role = await _userRolesRepository.GetRoleByUserId(_user.UserId) ?? throw new EntityNotFoundException();
             claims.Add(new Claim(ClaimTypes.Role, role.RoleName));
 
             return claims;
-        }
-
-        private SigningCredentials GetSigningCredentials()
-        {
-            var singinKey = Environment.GetEnvironmentVariable("SIGNIN_KEY");
-            var kid = Environment.GetEnvironmentVariable("KID");
-            var secret = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(singinKey));
-            secret.KeyId = kid;
-            return new SigningCredentials(secret, SecurityAlgorithms.HmacSha256Signature);
         }
 
         public async Task<bool> ValidateUser(LoginModel loginModel)
@@ -114,7 +104,7 @@ namespace DeskReserve.Services
                 return false;
             }
 
-            var validPassword = VerifyPassword(loginModel.Password, _user.PasswordHash, _user.PasswordSalt);
+            var validPassword = SecurityUtils.VerifyPassword(loginModel.Password, _user.PasswordHash, _user.PasswordSalt);
             return (!ReferenceEquals(_user, null) && validPassword);
         }
 
@@ -130,7 +120,7 @@ namespace DeskReserve.Services
                 return false;
             }
 
-            var passwordHashAndSalt = HashUserPassword(changePasswordModel.NewPassword);
+            var passwordHashAndSalt = SecurityUtils.HashUserPassword(changePasswordModel.NewPassword);
             _user.PasswordHash = passwordHashAndSalt.Item1;
             _user.PasswordSalt = passwordHashAndSalt.Item2;
 
@@ -139,7 +129,7 @@ namespace DeskReserve.Services
 
         public async Task<string> CreateRefreshToken()
         {
-            var newRefreshToken = GenerateRandomToken();
+            var newRefreshToken = SecurityUtils.GenerateRandomToken();
 
             await _tokenRepository.RemoveRefreshToken(_user.UserId);
             await _tokenRepository.SaveRefreshToken(_user.UserId, newRefreshToken);
@@ -147,65 +137,19 @@ namespace DeskReserve.Services
             return newRefreshToken;
         }
 
-        public Tuple<string, string> HashUserPassword(string password)
+        public async Task<User> GetUser(Guid userId)
         {
-            string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-            Random random = new Random();
-            string randomString = new string(Enumerable.Repeat(chars, 10).Select(s => s[random.Next(s.Length)]).ToArray());
-            byte[] salt = Encoding.ASCII.GetBytes(randomString);
-            string passwordHash = ComputeHash(password, new SHA256CryptoServiceProvider(), salt);
-
-            return new Tuple<string, string>(passwordHash, Encoding.ASCII.GetString(salt));
+            return await _userRepository.GetById(userId) ?? throw new EntityNotFoundException();
         }
 
-        public IEnumerable<Claim> GetAllClaimsFromToken(string token)
+        public async Task<Role> GetRole(Guid userId)
         {
-            IEnumerable<Claim> claims;
-
-            try
-            {
-                var jsonToken = ReadToken(token.Replace("Bearer ", string.Empty)) ?? throw new Exception();
-                claims = jsonToken.Claims;
-            }
-            catch (Exception e)
-            {
-                claims = null;
-            }
-
-            return claims;
+            return await _userRolesRepository.GetRoleByUserId(userId) ?? throw new EntityNotFoundException();
         }
 
-        private static string GenerateRandomToken()
+        public async Task<bool> UpdateRole(Role role)
         {
-            return Guid.NewGuid().ToString("N");
-        }
-
-        public static string ComputeHash(string input, HashAlgorithm algorithm, Byte[] salt)
-        {
-            Byte[] inputBytes = Encoding.UTF8.GetBytes(input);
-
-            Byte[] saltedInput = new Byte[salt.Length + inputBytes.Length];
-            salt.CopyTo(saltedInput, 0);
-            inputBytes.CopyTo(saltedInput, salt.Length);
-
-            Byte[] hashedBytes = algorithm.ComputeHash(saltedInput);
-
-            return BitConverter.ToString(hashedBytes);
-        }
-
-        public static bool VerifyPassword(string enteredPassword, string storedHash, string storedSalt)
-        {
-            byte[] salt = Encoding.ASCII.GetBytes(storedSalt);
-            var enteredPasswordHash = ComputeHash(enteredPassword, new SHA256CryptoServiceProvider(), salt);
-            return string.Equals(storedHash, enteredPasswordHash);
-        }
-
-        public static JwtSecurityToken ReadToken(string jwtToken)
-        {
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var jsonToken = tokenHandler.ReadToken(jwtToken) as JwtSecurityToken;
-
-            return jsonToken;
+            return await _userRolesRepository.Update(role);
         }
     }
 }

@@ -15,6 +15,8 @@ namespace DeskReserve.Interfaces
 
         Task<bool> Update(UserRole userRole);
 
+        Task<bool> Update(Role role);
+
         Task<bool> Delete(UserRole userRole);
     }
 }
