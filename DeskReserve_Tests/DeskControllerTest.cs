@@ -5,11 +5,11 @@ using DeskReserve.Data.DBContext.Entity;
 using DeskReserve.Domain;
 using Microsoft.AspNetCore.Http;
 using DeskReserve.Exceptions;
-using DeskReserve.Domain.Service;
+using DeskReserve.Interfaces;
 
 namespace DeskReserve_Tests
 {
-	[TestFixture]
+    [TestFixture]
 	public class DeskControllerTest
 	{
 		[Test]

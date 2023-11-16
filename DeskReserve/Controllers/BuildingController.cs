@@ -1,7 +1,7 @@
 ﻿using DeskReserve.Data.DBContext.Entity;
 using DeskReserve.Domain;
 using DeskReserve.Exceptions;
-using DeskReserve.Services;
+using DeskReserve.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DeskReserve.Controllers

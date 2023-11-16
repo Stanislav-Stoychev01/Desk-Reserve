@@ -3,11 +3,11 @@ using DeskReserve.Data.DBContext.Entity;
 using DeskReserve.Domain;
 using System.Net.Mime;
 using DeskReserve.Exceptions;
-using DeskReserve.Domain.Service;
+using DeskReserve.Interfaces;
 
 namespace DeskReserve.Controllers
 {
-	[Route("api/[controller]")]
+    [Route("api/[controller]")]
 	[ApiController]
 	public class DesksController : ControllerBase
 	{

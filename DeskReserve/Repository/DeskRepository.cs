@@ -2,10 +2,11 @@
 using DeskReserve.Data.DBContext.Entity;
 using Microsoft.EntityFrameworkCore;
 using DeskReserve.Exceptions;
+using DeskReserve.Interfaces;
 
 namespace DeskReserve.Repository
 {
-	public class DeskRepository : IDeskRepository
+    public class DeskRepository : IDeskRepository
 	{
 		private readonly ApplicationDbContext _context;
 

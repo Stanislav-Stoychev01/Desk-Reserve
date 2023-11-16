@@ -1,7 +1,7 @@
 ﻿using DeskReserve.Data.DBContext.Entity;
 using DeskReserve.Domain;
 
-namespace DeskReserve.Services
+namespace DeskReserve.Interfaces
 {
     public interface IBuildingService
     {

@@ -1,6 +1,6 @@
 ﻿using DeskReserve.Data.DBContext.Entity;
 
-namespace DeskReserve.Repository
+namespace DeskReserve.Interfaces
 {
     public interface IBuildingRepository
     {

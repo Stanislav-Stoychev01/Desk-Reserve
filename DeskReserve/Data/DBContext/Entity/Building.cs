@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DeskReserve.Data.DBContext.Entity
 {
-    [Table("building")]
+    [Table("Building")]
     public class Building 
     {
         [Key]
