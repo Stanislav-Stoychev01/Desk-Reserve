@@ -38,7 +38,6 @@ builder.Services.AddScoped<IBuildingRepository, BuildingRepository>();
 builder.Services.AddScoped<IFloorRepository, FloorRepository>();
 builder.Services.AddScoped<IFloorService, FloorService>();
 builder.Services.AddScoped<IRoomRepository, RoomRepository>();
-builder.Services.AddScoped<RoomController, RoomController>();
 builder.Services.AddScoped<IRoomService, RoomService>();
 
 var app = builder.Build();

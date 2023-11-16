@@ -48,7 +48,7 @@ namespace DeskReserve_Tests
 				HasAirConditioner = false,
 			};
 
-			_roomRepositoryMock.Setup(repo => repo.GetOneAsync(roomId)).ReturnsAsync(room);
+			_roomRepositoryMock.Setup(repo => repo.GetById(roomId)).ReturnsAsync(room);
 
 			var result = await _roomService.Get(roomId);
 
@@ -60,7 +60,7 @@ namespace DeskReserve_Tests
 		{
 			Guid id = Guid.NewGuid();
 
-			_roomRepositoryMock.Setup(repo => repo.GetOneAsync(id)).ThrowsAsync(new EntityNotFoundException());
+			_roomRepositoryMock.Setup(repo => repo.GetById(id)).ThrowsAsync(new EntityNotFoundException());
 
 			async Task Act() => await _roomService.Get(id);
 
@@ -84,8 +84,8 @@ namespace DeskReserve_Tests
 				HasAirConditioner = true
 			};
 
-			_roomRepositoryMock.Setup(repo => repo.GetOneAsync(roomId)).ReturnsAsync(room);
-			_roomRepositoryMock.Setup(repo => repo.UpdateOneAsync(room)).ReturnsAsync(true);
+			_roomRepositoryMock.Setup(repo => repo.GetById(roomId)).ReturnsAsync(room);
+			_roomRepositoryMock.Setup(repo => repo.Update(room)).ReturnsAsync(true);
 
 			var result = await _roomService.Update(roomId, roomDto);
 
@@ -97,7 +97,7 @@ namespace DeskReserve_Tests
 		{
 			Guid id = Guid.NewGuid();
 
-			_roomRepositoryMock.Setup(repo => repo.DeleteOneAsync(id)).ReturnsAsync(true);
+			_roomRepositoryMock.Setup(repo => repo.Delete(id)).ReturnsAsync(true);
 
 			var result = await _roomService.Delete(id);
 
@@ -108,7 +108,7 @@ namespace DeskReserve_Tests
 		{
 			var id = Guid.NewGuid();
 
-			_roomRepositoryMock.Setup(repo => repo.DeleteOneAsync(id)).ReturnsAsync(false);
+			_roomRepositoryMock.Setup(repo => repo.Delete(id)).ReturnsAsync(false);
 
 			var result = await _roomService.Delete(id);
 

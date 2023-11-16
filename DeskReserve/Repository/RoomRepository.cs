@@ -20,27 +20,27 @@ namespace DeskReserve.Repository
 			return await _context.Rooms.ToListAsync();
 		}
 
-		public async Task<Room> GetOneAsync(Guid id)
+		public async Task<Room> GetById(Guid id)
 		{
 			return await _context.Rooms.FindAsync(id);
 		}
 
-		public async Task<bool> CreateOneAsync(Room room)
+		public async Task<bool> Create(Room room)
 		{
 			await _context.Rooms.AddAsync(room);
 
 			return await _context.SaveChangesAsync() > 0;
 		}
 
-		public async Task<bool> UpdateOneAsync(Room room)
+		public async Task<bool> Update(Room room)
 		{
-			var exict = await _context.Rooms.FindAsync(room.RoomId) ?? throw new EntityNotFoundException();
+			var exists = await _context.Rooms.FindAsync(room.RoomId) ?? throw new EntityNotFoundException();
 			_context.Entry(room).State = EntityState.Modified;
 
 			return await _context.SaveChangesAsync() > 0;
 		}
 
-		public async Task<bool> DeleteOneAsync(Guid roomId)
+		public async Task<bool> Delete(Guid roomId)
 		{
 			var roomEntity = await _context.Rooms.FindAsync(roomId) ?? throw new EntityNotFoundException();
 
