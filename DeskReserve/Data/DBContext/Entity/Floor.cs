@@ -16,5 +16,12 @@ namespace DeskReserve.Data.DBContext.Entity
         public bool HasElevator { get; set; }
 
         public string? FloorCoveringType { get; set; }
-    }
+        
+        public Guid BuildingId { get; set; }
+
+		[ForeignKey(nameof(BuildingId))]
+        public Building Building { get; set; }
+
+		public virtual ICollection<Room> Rooms { get; set; }
+	}
 }

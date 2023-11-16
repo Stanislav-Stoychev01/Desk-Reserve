@@ -30,12 +30,12 @@ namespace DeskReserve.Tests.Controllers
                                City = "City1",
                                StreetAddress = "Street 1",
                                Neighbourhood = "Neighbourhood 1",
-                               Floors = 1 },
+                               FloorsCount = 1 },
                 new Building { BuildingId = Guid.NewGuid(),
                                City = "City2",
                                StreetAddress = "Street2",
                                Neighbourhood = "Neighbourhood2",
-                               Floors = 2 }
+                               FloorsCount = 2 }
             };
 
             _buildingServiceMock.Setup(service => service.GetAll()).ReturnsAsync(buildings);
@@ -64,7 +64,7 @@ namespace DeskReserve.Tests.Controllers
                 City = "City1",
                 StreetAddress = "Street 1",
                 Neighbourhood = "Neighbourhood 1",
-                Floors = 1
+                FloorsCount = 1
             };
 
             _buildingServiceMock.Setup(service => service.GetBuildingById(id)).ReturnsAsync(building);
@@ -91,7 +91,7 @@ namespace DeskReserve.Tests.Controllers
                 City = "City1",
                 StreetAddress = "Street1",
                 Neighbourhood = "Neighbourhood1",
-                Floors = 1
+                FloorsCount = 1
             };
 
             _buildingServiceMock.Setup(service => service.AddNew(buildingDto)).ReturnsAsync(true);
@@ -108,7 +108,7 @@ namespace DeskReserve.Tests.Controllers
                 City = "City1",
                 StreetAddress = "Street1",
                 Neighbourhood = "Neighbourhood1",
-                Floors = 1
+                FloorsCount = 1
             };
 
             _buildingServiceMock.Setup(service => service.AddNew(buildingDto)).ReturnsAsync(false);
@@ -147,7 +147,7 @@ namespace DeskReserve.Tests.Controllers
                 City = "City12",
                 StreetAddress = "Street 12",
                 Neighbourhood = "Neighbourhood 12",
-                Floors = 12
+                FloorsCount = 12
             };
 
             _buildingServiceMock.Setup(service => service.UpdateBuilding(id, buildingDto)).ReturnsAsync(true);
@@ -166,7 +166,7 @@ namespace DeskReserve.Tests.Controllers
                 City = "City12",
                 StreetAddress = "Street 12",
                 Neighbourhood = "Neighbourhood 12",
-                Floors = 12
+                FloorsCount = 12
             };
 
             _buildingServiceMock.Setup(service => service.UpdateBuilding(id, buildingDto)).ThrowsAsync(new DataNotFound());

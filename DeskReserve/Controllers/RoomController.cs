@@ -16,11 +16,11 @@ namespace DeskReserve.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class RoomsController : ControllerBase
+    public class RoomController : ControllerBase
     {
         private readonly IRoomService _roomService;
 
-        public RoomsController(IRoomService roomService)
+        public RoomController(IRoomService roomService)
         {
 			_roomService = roomService ?? throw new ArgumentNullException(nameof(_roomService));
 		}

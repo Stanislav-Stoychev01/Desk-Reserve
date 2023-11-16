@@ -27,14 +27,14 @@ namespace DeskReserve.Tests.Service
                 City = "City1",
                 StreetAddress = "StreetAddress1",
                 Neighbourhood = "Neighbourhood1",
-                Floors = 1
+                FloorsCount = 1
             };
 
             _buildingRepositoryMock.Setup(repo => repo.CreateAsync(It.Is<Building>(b =>
                                           b.City == buildingDto.City &&
                                           b.StreetAddress == buildingDto.StreetAddress &&
                                           b.Neighbourhood == buildingDto.Neighbourhood &&
-                                          b.Floors == buildingDto.Floors)))
+                                          b.FloorsCount == buildingDto.FloorsCount)))
                                           .ReturnsAsync(true);
 
             var result = await _buildingService.AddNew(buildingDto);
@@ -49,7 +49,7 @@ namespace DeskReserve.Tests.Service
                 City = "City1",
                 StreetAddress = "StreetAddress1",
                 Neighbourhood = "Neighbourhood1",
-                Floors = 1
+                FloorsCount = 1
             };
 
             var newBuilding = new Building
@@ -58,7 +58,7 @@ namespace DeskReserve.Tests.Service
                 City = "City1",
                 StreetAddress = "StreetAddress1",
                 Neighbourhood = "Neighbourhood1",
-                Floors = 1
+                FloorsCount = 1
             };
 
             _buildingRepositoryMock.Setup(repo => repo.CreateAsync(newBuilding)).ReturnsAsync(false);
@@ -78,7 +78,7 @@ namespace DeskReserve.Tests.Service
                 City = "City1",
                 StreetAddress = "StreetAddress1",
                 Neighbourhood = "Neighbourhood1",
-                Floors = 1
+                FloorsCount = 1
             };
 
             _buildingRepositoryMock.Setup(repo => repo.GetByIdAsync(guid)).ReturnsAsync(existingBuilding);
@@ -110,7 +110,7 @@ namespace DeskReserve.Tests.Service
                 City = "City1",
                 StreetAddress = "StreetAddress1",
                 Neighbourhood = "Neighbourhood1",
-                Floors = 1
+                FloorsCount = 1
             };
 
             var updatedDto = new BuildingDto
@@ -118,7 +118,7 @@ namespace DeskReserve.Tests.Service
                 City = "City12",
                 StreetAddress = "StreetAddress12",
                 Neighbourhood = "Neighbourhood12",
-                Floors = 12
+                FloorsCount = 12
             };
 
             var newBuilding = new Building
@@ -127,7 +127,7 @@ namespace DeskReserve.Tests.Service
                 City = "City12",
                 StreetAddress = "StreetAddress12",
                 Neighbourhood = "Neighbourhood12",
-                Floors = 12
+                FloorsCount = 12
             };
 
             _buildingRepositoryMock.Setup(repo => repo.GetByIdAsync(guid)).ReturnsAsync(existingBuilding);

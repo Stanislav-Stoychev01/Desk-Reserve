@@ -19,6 +19,6 @@ namespace DeskReserve.Domain
 
         [Required(ErrorMessage = "Floors are required.")]
         [DefaultValue(1)]
-        public int Floors { get; set; }
+        public int FloorsCount { get; set; }
     }
 }

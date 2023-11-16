@@ -9,13 +9,19 @@ namespace DeskReserve.Data.DBContext.Entity
 	{
 		[Key]
 		public Guid DeskId { get; set; }
+		
 		[Required]
 		public int DeskNumber { get; set; }
-		[Required]
+
 		public Guid RoomId { get; set; }
+
 		[DefaultValue(false)]
 		public bool IsOccupied { get; set; }
+
 		[DefaultValue(false)]
 		public bool IsStatic { get; set; }
+
+		[ForeignKey(nameof(RoomId))]
+		public Room Room { get; set; }
 	}
 }

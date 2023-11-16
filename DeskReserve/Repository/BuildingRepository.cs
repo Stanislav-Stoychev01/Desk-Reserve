@@ -16,8 +16,11 @@ namespace DeskReserve.Repository
 
         public async Task<List<Building>> GetAllAsync()
         {
-            return await _dbContext.Buildings.ToListAsync();
-        }
+			var buildings = _dbContext.Buildings
+	            .Include(b => b.Floors).ToList();
+
+			return buildings;
+		}
 
         public async Task<Building> GetByIdAsync(Guid id)
         {

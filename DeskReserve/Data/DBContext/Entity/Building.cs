@@ -4,8 +4,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DeskReserve.Data.DBContext.Entity
 {
-    [Table("building")]
-    public class Building 
+    [Table("Building")]
+    public class Building
     {
         [Key]
         public Guid BuildingId { get; set; }
@@ -24,6 +24,8 @@ namespace DeskReserve.Data.DBContext.Entity
 
         [Required(ErrorMessage = "Floors are required.")]
         [DefaultValue(1)]
-        public int Floors { get; set; }
+        public int FloorsCount { get; set; }
+
+        public virtual ICollection<Floor> Floors { get; set; }
     }
 }

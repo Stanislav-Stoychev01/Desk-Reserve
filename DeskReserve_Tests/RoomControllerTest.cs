@@ -19,14 +19,14 @@ namespace DeskReserve_Tests
 	[TestFixture]
 	internal class RoomControllerTest
 	{
-		private RoomsController _roomController;
+		private RoomController _roomController;
 		private Mock<IRoomService> _roomServiceMock;
 
 		[SetUp]
 		public void SetUp()
 		{
 			_roomServiceMock = new Mock<IRoomService>();
-			_roomController = new RoomsController(_roomServiceMock.Object); 
+			_roomController = new RoomController(_roomServiceMock.Object); 
 		}
 		[Test]
 		public async Task Get_ReturnsOkWithRooms()

@@ -12,7 +12,7 @@ namespace DeskReserve.Domain
                 City = buildingdto.City,
                 StreetAddress = buildingdto.StreetAddress,
                 Neighbourhood = buildingdto.Neighbourhood,
-                Floors = buildingdto.Floors
+                FloorsCount = buildingdto.FloorsCount
             };
         }
 
@@ -24,7 +24,7 @@ namespace DeskReserve.Domain
                 City = buildingdto.City,
                 StreetAddress = buildingdto.StreetAddress,
                 Neighbourhood = buildingdto.Neighbourhood,
-                Floors = buildingdto.Floors
+                FloorsCount = buildingdto.FloorsCount
             };
         }
     }

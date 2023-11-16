@@ -12,7 +12,7 @@ namespace DeskReserve_Tests
                 City = "City1",
                 StreetAddress = "StreetAddress1",
                 Neighbourhood = "Neighbourhood1",
-                Floors = 1
+                FloorsCount = 1
             };
 
             var result = buildingDto.ToBuilding();
@@ -22,7 +22,7 @@ namespace DeskReserve_Tests
             Assert.AreEqual(buildingDto.City, result.City);
             Assert.AreEqual(buildingDto.StreetAddress, result.StreetAddress);
             Assert.AreEqual(buildingDto.Neighbourhood, result.Neighbourhood);
-            Assert.AreEqual(buildingDto.Floors, result.Floors);
+            Assert.AreEqual(buildingDto.FloorsCount, result.FloorsCount);
         }
 
         [Test]
@@ -35,7 +35,7 @@ namespace DeskReserve_Tests
                 City = "City1",
                 StreetAddress = "StreetAddress1",
                 Neighbourhood = "Neighbourhood1",
-                Floors = 1
+                FloorsCount = 1
             };
 
             var result = buildingDto.ToBuilding(id);
@@ -45,7 +45,7 @@ namespace DeskReserve_Tests
             Assert.AreEqual(buildingDto.City, result.City);
             Assert.AreEqual(buildingDto.StreetAddress, result.StreetAddress);
             Assert.AreEqual(buildingDto.Neighbourhood, result.Neighbourhood);
-            Assert.AreEqual(buildingDto.Floors, result.Floors);
+            Assert.AreEqual(buildingDto.FloorsCount, result.FloorsCount);
         }
     }
 }
