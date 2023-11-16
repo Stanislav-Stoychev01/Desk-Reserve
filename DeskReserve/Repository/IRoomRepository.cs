@@ -7,12 +7,12 @@ namespace DeskReserve.Repository
 	{
 		Task<IEnumerable<Room>> GetAllAsync();
 
-		Task<Room> GetOneAsync(Guid id);
+		Task<Room> GetById(Guid id);
 
-		Task<bool> UpdateOneAsync(Room room);
+		Task<bool> Update(Room room);
 
-		Task<bool> CreateOneAsync(Room room);
+		Task<bool> Create(Room room);
 
-		Task<bool> DeleteOneAsync(Guid id);
+		Task<bool> Delete(Guid id);
 	}
 }
