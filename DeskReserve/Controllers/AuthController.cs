@@ -91,7 +91,8 @@ namespace DeskReserve.Controllers
             }
         }
 
-        [Authorize]
+
+        [Authorize(Policy = "RequireEmployeeOnly")]
         [HttpPost("logout")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -109,7 +110,8 @@ namespace DeskReserve.Controllers
             }
         }
 
-        [Authorize]
+
+        [Authorize(Policy = "RequireEmployeeOnly")]
         [HttpPost("change-password")]
         [ProducesResponseType(StatusCodes.Status202Accepted)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -161,23 +163,33 @@ namespace DeskReserve.Controllers
             return Ok("Password changed successfully.");
         }
 
-        [Authorize]
+
+        [Authorize(Policy = "RequireManagerOnly")]
         [HttpPut("user/{id}/role")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> ChnagePermissions(Guid id, [FromBody] string newRoleName)
         {
-            Role userRole = null;
+            Role currentRole = null;
+            UserRole currentUserRole = null;
             try
             {
-                userRole = await _authService.GetRole(id);
-                if (String.Equals(userRole.RoleName, newRoleName))
+                currentRole = await _authService.GetRole(id);
+                if (String.Equals(currentRole.RoleName, newRoleName))
                 {
                     return Ok();
                 }
 
-                userRole.RoleName = newRoleName;
+                currentUserRole = await _authService.GetUserRole(id);
+                var newRoleId = await _authService.GetRoleId(newRoleName);
+
+                if (Equals(currentUserRole, Guid.Empty))
+                {
+                    throw new ArgumentException("Guid.Empty is not a valid id");
+                }
+
+                currentUserRole.RoleId = newRoleId;
             }
             catch (Exception ex)
             {
@@ -185,7 +197,7 @@ namespace DeskReserve.Controllers
                 return Problem($"Something Went Wrong in the {nameof(ChnagePermissions)}", statusCode: 500);
             }
 
-            var success = await _authService.UpdateRole(userRole);
+            var success = await _authService.UpdateUserRole(currentUserRole);
 
             return success ? Ok($"User role updated to {newRoleName}") : BadRequest();
         }

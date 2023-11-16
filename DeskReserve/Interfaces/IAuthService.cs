@@ -11,8 +11,10 @@ namespace DeskReserve.Interfaces
         Task<string> CreateToken();
         Task<string> CreateRefreshToken();
         Task<bool> ChangeUserPassword(string userEmail, ChangePasswordModel changePasswordModel);
-        Task<Role> GetRole(Guid userId);
         Task<User> GetUser(Guid userId);
-        Task<bool> UpdateRole(Role role);
+        Task<Role> GetRole(Guid userId);
+        Task<Guid> GetRoleId(string roleName);
+        Task<UserRole> GetUserRole(Guid userId);
+        Task<bool> UpdateUserRole(UserRole newRole);
     }
 }

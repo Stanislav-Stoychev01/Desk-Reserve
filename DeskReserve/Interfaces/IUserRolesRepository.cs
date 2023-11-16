@@ -9,13 +9,13 @@ namespace DeskReserve.Interfaces
 
         Task<IEnumerable<UserRoleDto>> GetAllUsersRoles();
 
+        Task<UserRole> GetUserRole(Guid userId);
+
         Task<Role> GetRoleByUserId(Guid userId);
 
         Task<bool> AddUserRole(UserRole userRole);
 
         Task<bool> Update(UserRole userRole);
-
-        Task<bool> Update(Role role);
 
         Task<bool> Delete(UserRole userRole);
     }

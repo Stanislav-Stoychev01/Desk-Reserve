@@ -18,7 +18,11 @@ namespace DeskReserve.Repository
 
         public async Task<Guid> GetRoleIdByRoleName(string roleName)
         {
-            Role role = await _context.Roles.Where(r => r.RoleName == roleName).FirstOrDefaultAsync() ?? throw new EntityNotFoundException();
+            Role role = await _context.Roles
+                .Where(r => r.RoleName == roleName)
+                .FirstOrDefaultAsync() 
+                ?? throw new EntityNotFoundException();
+
             return role.RoleId;
         }
 
@@ -36,6 +40,16 @@ namespace DeskReserve.Repository
                 .ToList();
 
             return usersWithRoles;
+        }
+
+        public async Task<UserRole> GetUserRole(Guid userId)
+        {
+            var userRole = await _context.UserRoles
+                .Where(ur => ur.UserId == userId)
+                .FirstOrDefaultAsync() 
+                ?? throw new EntityNotFoundException();
+
+            return userRole;
         }
 
         public async Task<Role> GetRoleByUserId(Guid userId)
@@ -59,13 +73,6 @@ namespace DeskReserve.Repository
         public async Task<bool> Update(UserRole userRole)
         {
             _context.Entry(userRole).State = EntityState.Modified;
-
-            return await _context.SaveChangesAsync() > 0;
-        }
-
-        public async Task<bool> Update(Role role)
-        {
-            _context.Entry(role).State = EntityState.Modified;
 
             return await _context.SaveChangesAsync() > 0;
         }

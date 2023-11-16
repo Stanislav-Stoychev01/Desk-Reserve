@@ -35,7 +35,7 @@ namespace DeskReserve.Services
             _user.PasswordHash = passwordHash;
             _user.PasswordSalt = salt;
 
-            Guid roleId = await _userRolesRepository.GetRoleIdByRoleName("User");
+            Guid roleId = await _userRolesRepository.GetRoleIdByRoleName("Employee");
             UserRole userRole = new UserRole()
             {
                 UserRolesId = Guid.NewGuid(),
@@ -43,16 +43,18 @@ namespace DeskReserve.Services
                 RoleId = roleId
             };
 
+            var success = false;
             try
             {
-                await _userRolesRepository.AddUserRole(userRole);
+                success = await _userRolesRepository.AddUserRole(userRole);
+                success = await _userRepository.Add(_user);
             }
             catch (Exception ex)
             {
                 return false;
             }
 
-            return await _userRepository.Add(_user);
+            return success;
         }
 
         public async Task<string> CreateToken()
@@ -147,9 +149,29 @@ namespace DeskReserve.Services
             return await _userRolesRepository.GetRoleByUserId(userId) ?? throw new EntityNotFoundException();
         }
 
-        public async Task<bool> UpdateRole(Role role)
+        public async Task<Guid> GetRoleId(string roleName)
         {
-            return await _userRolesRepository.Update(role);
+            Guid roleId;
+            try
+            {
+                roleId = await _userRolesRepository.GetRoleIdByRoleName(roleName);
+            }
+            catch (Exception ex)
+            {
+                return Guid.Empty;
+            }
+
+            return roleId;
+        }
+
+        public async Task<UserRole> GetUserRole(Guid userId)
+        {
+            return await _userRolesRepository.GetUserRole(userId) ?? throw new EntityNotFoundException();
+        }
+
+        public async Task<bool> UpdateUserRole(UserRole newRole)
+        {
+            return await _userRolesRepository.Update(newRole);
         }
     }
 }

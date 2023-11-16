@@ -64,6 +64,14 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("RequireManagerOnly", policy =>
+          policy.RequireRole("Manager", "Administrator"));
+    options.AddPolicy("RequireEmployeeOnly", policy =>
+          policy.RequireClaim("emailaddress"));
+});
+
 
 var app = builder.Build();
 

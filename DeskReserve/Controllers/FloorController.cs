@@ -18,7 +18,7 @@ namespace DeskReserve.Controllers
             _service = service ?? throw new ArgumentNullException(nameof(service));
         }
 
-        [Authorize(Roles ="User")]
+        [Authorize]
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
