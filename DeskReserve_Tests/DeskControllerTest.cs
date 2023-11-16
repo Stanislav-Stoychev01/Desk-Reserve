@@ -4,7 +4,7 @@ using DeskReserve.Controllers;
 using DeskReserve.Data.DBContext.Entity;
 using DeskReserve.Domain;
 using Microsoft.AspNetCore.Http;
-using DeskReserve.Exception;
+using DeskReserve.Exceptions;
 using DeskReserve.Domain.Service;
 
 namespace DeskReserve_Tests
