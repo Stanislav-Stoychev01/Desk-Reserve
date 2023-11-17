@@ -1,6 +1,6 @@
 ﻿using DeskReserve.Domain;
 
-namespace DeskReserve_Tests
+namespace DeskReserve_Tests.Domain_Tests
 {
     public class BuildingDtoUpdateTests
     {

@@ -8,7 +8,7 @@ using DeskReserve.Domain;
 using Microsoft.AspNetCore.Http;
 using DeskReserve.Exceptions;
 
-namespace Desk_Reserve.Tests
+namespace DeskReserve_Tests.Controllers_Tests
 {
     [TestFixture]
     public class FloorControllerTests

@@ -6,7 +6,7 @@ using DeskReserve.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 
-namespace DeskReserve.Tests.Controllers
+namespace DeskReserve_Tests.Controllers_Tests
 {
     [TestFixture]
     public class BuildingControllerTests

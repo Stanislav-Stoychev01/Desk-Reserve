@@ -5,7 +5,7 @@ using DeskReserve.Interfaces;
 using DeskReserve.Services;
 using Moq;
 
-namespace DeskReserve.Tests.Service
+namespace DeskReserve_Tests.Services_Tests
 {
     public class BuildingServiceTests
     {

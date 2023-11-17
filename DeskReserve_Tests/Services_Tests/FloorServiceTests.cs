@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 
-namespace Desk_Reserve.Tests
+namespace DeskReserve_Tests.Services_Tests
 {
     [TestFixture]
     public class FloorServiceTests
