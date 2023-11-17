@@ -44,6 +44,13 @@ namespace DeskReserve_Tests
 			Assert.AreEqual(room.HasAirConditioner, roomDto.HasAirConditioner);
 		}
 
+		/*public static Room UpdateFromDto(this Room Room, RoomDto RoomDto)
+		{
+			Room.RoomNumber = RoomDto.RoomNumber;
+			Room.HasAirConditioner = RoomDto.HasAirConditioner;
+			return Room;
+		}*/
+
 		[Test]
 		public void UpdateRoomFromDto()
 		{
