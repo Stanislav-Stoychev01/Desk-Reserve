@@ -1,17 +1,17 @@
 ﻿using DeskReserve.Data.DBContext.Entity;
 using DeskReserve.Domain;
 using DeskReserve.Exceptions;
-using DeskReserve.Repository;
-using DeskReserve.Domain.Service;
 using Moq;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using DeskReserve.Services;
+using DeskReserve.Interfaces;
 
 namespace Desk_Reserve.Tests
 {
-	[TestFixture]
+    [TestFixture]
 	public class DeskServiceTests
 	{
 		private Mock<IDeskRepository> repositoryMock;

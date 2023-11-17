@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace DeskReserve.Data.DBContext.Entity
 {
@@ -24,6 +25,7 @@ namespace DeskReserve.Data.DBContext.Entity
 
         [Required(ErrorMessage = "Floors are required.")]
         [DefaultValue(1)]
+        [JsonIgnore]
         public int FloorsCount { get; set; }
 
         public virtual ICollection<Floor> Floors { get; set; }

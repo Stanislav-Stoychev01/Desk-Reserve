@@ -1,17 +1,18 @@
 using DeskReserve.Data.DBContext;
-using DeskReserve.Domain.Service;
-using DeskReserve.Mapper;
 using DeskReserve.Repository;
 using DeskReserve.Interfaces;
 using DeskReserve.Services;
-using DeskReserve.Domain;
 using Microsoft.EntityFrameworkCore;
-using DeskReserve.Controllers;
+using System.Text.Json.Serialization;
 
 const String CorsDisablePolicy = "AllowAnyOrigin";
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+            .AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+            });
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -29,12 +30,9 @@ String connectionString = builder.Configuration["ConnectionStrings:DefaultConnec
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connectionString));
 
 builder.Services.AddScoped<IDeskService, DeskService>();
-builder.Services.AddScoped<DesksController, DesksController>();
 builder.Services.AddScoped<IDeskRepository, DeskRepository>();
 builder.Services.AddScoped<IBuildingService, BuildingService>();
-builder.Services.AddScoped<BuildingController, BuildingController>();
 builder.Services.AddScoped<IBuildingRepository, BuildingRepository>();
-
 builder.Services.AddScoped<IFloorRepository, FloorRepository>();
 builder.Services.AddScoped<IFloorService, FloorService>();
 builder.Services.AddScoped<IRoomRepository, RoomRepository>();

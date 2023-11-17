@@ -1,20 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using DeskReserve.Data.DBContext;
+﻿using Microsoft.AspNetCore.Mvc;
 using DeskReserve.Data.DBContext.Entity;
 using DeskReserve.Domain;
 using System.Net.Mime;
-using System.Drawing;
 using DeskReserve.Exceptions;
+using DeskReserve.Interfaces;
 
 namespace DeskReserve.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/rooms")]
     [ApiController]
     public class RoomController : ControllerBase
     {
@@ -25,7 +18,7 @@ namespace DeskReserve.Controllers
 			_roomService = roomService ?? throw new ArgumentNullException(nameof(_roomService));
 		}
       
-        [HttpGet("list")]
+        [HttpGet]
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status404NotFound)]
 		public async Task<ActionResult<IEnumerable<Room>>> GetAll()
@@ -53,8 +46,8 @@ namespace DeskReserve.Controllers
             return result;
         }
 
-		[HttpPut("edit/{id}")]
-		[Consumes(MediaTypeNames.Application.Json)]
+        [HttpPut("{id}")]
+        [Consumes(MediaTypeNames.Application.Json)]
 		[ProducesResponseType(StatusCodes.Status204NoContent)]
 		[ProducesResponseType(StatusCodes.Status404NotFound)]
 		public async Task<IActionResult> UpdateOne(Guid id, RoomDto room)
@@ -74,7 +67,7 @@ namespace DeskReserve.Controllers
 			return result;
 		}
 
-        [HttpPost("new")]
+        [HttpPost]
 		[ProducesResponseType(StatusCodes.Status201Created)]
 		[ProducesResponseType(StatusCodes.Status409Conflict)]
 		public async Task<ActionResult<Room>> CreateAsync(RoomDto roomDto)

@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace DeskReserve.Data.DBContext.Entity
 {
@@ -20,8 +21,10 @@ namespace DeskReserve.Data.DBContext.Entity
         public Guid BuildingId { get; set; }
 
 		[ForeignKey(nameof(BuildingId))]
+        [JsonIgnore]
         public Building Building { get; set; }
 
-		public virtual ICollection<Room> Rooms { get; set; }
+        [JsonIgnore]
+        public virtual ICollection<Room> Rooms { get; set; }
 	}
 }

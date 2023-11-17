@@ -37,7 +37,7 @@ namespace DeskReserve.Controllers
             return !ReferenceEquals(floor, null) ? Ok(floor) : NotFound();
         }
 
-        [HttpPut("{id}/edit")]
+        [HttpPut("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Put(Guid id, FloorDto floor)

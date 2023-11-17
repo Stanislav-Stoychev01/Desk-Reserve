@@ -2,6 +2,7 @@
 using DeskReserve.Data.DBContext;
 using Microsoft.EntityFrameworkCore;
 using DeskReserve.Exceptions;
+using DeskReserve.Interfaces;
 
 namespace DeskReserve.Repository
 {
@@ -17,7 +18,8 @@ namespace DeskReserve.Repository
         public async Task<List<Building>> GetAllAsync()
         {
 			var buildings = _dbContext.Buildings
-	            .Include(b => b.Floors).ToList();
+	            .Include(b => b.Floors)
+                .ToList();
 
 			return buildings;
 		}

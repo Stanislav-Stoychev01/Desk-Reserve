@@ -2,11 +2,11 @@ using DeskReserve.Data.DBContext;
 using DeskReserve.Data.DBContext.Entity;
 using Microsoft.EntityFrameworkCore;
 using DeskReserve.Exceptions;
-using DeskReserve.Domain;
+using DeskReserve.Interfaces;
 
 namespace DeskReserve.Repository
 {
-	public class RoomRepository : IRoomRepository
+    public class RoomRepository : IRoomRepository
 	{
 		private readonly ApplicationDbContext _context;
 

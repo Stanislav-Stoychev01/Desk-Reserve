@@ -3,17 +3,17 @@ using DeskReserve.Data.DBContext.Entity;
 using DeskReserve.Domain;
 using System.Net.Mime;
 using DeskReserve.Exceptions;
-using DeskReserve.Domain.Service;
+using DeskReserve.Interfaces;
 
 namespace DeskReserve.Controllers
 {
-	[Route("api/[controller]")]
+    [Route("api/desks")]
 	[ApiController]
-	public class DesksController : ControllerBase
+	public class DeskController : ControllerBase
 	{
 		private readonly IDeskService _service;
 
-		public DesksController(IDeskService service)
+		public DeskController(IDeskService service)
 		{
 			_service = service ?? throw new ArgumentNullException(nameof(service));
 		}

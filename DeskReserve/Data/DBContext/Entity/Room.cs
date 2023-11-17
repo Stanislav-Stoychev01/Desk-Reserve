@@ -1,12 +1,13 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace DeskReserve.Data.DBContext.Entity
 {
 	[Table("Room")]
 	public class Room
 	{
-		[Key]
+        [Key]
 		public Guid RoomId { get; set; }
 
 		[Required]
@@ -17,8 +18,10 @@ namespace DeskReserve.Data.DBContext.Entity
 		public bool HasAirConditioner  { get; set; }
 
 		[ForeignKey(nameof(FloorId))]
-		public Floor Floor { get; set; }
+        [JsonIgnore]
+        public Floor Floor { get; set; }
 
-		public virtual ICollection<Desk> Desks { get; set; }
+        [JsonIgnore]
+        public virtual ICollection<Desk> Desks { get; set; }
 	}
 }

@@ -1,6 +1,7 @@
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace DeskReserve.Data.DBContext.Entity
 {
@@ -22,6 +23,7 @@ namespace DeskReserve.Data.DBContext.Entity
 		public bool IsStatic { get; set; }
 
 		[ForeignKey(nameof(RoomId))]
-		public Room Room { get; set; }
+        [JsonIgnore]
+        public Room Room { get; set; }
 	}
 }
