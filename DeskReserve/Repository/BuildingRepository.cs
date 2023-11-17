@@ -18,7 +18,7 @@ namespace DeskReserve.Repository
         public async Task<List<Building>> GetAllAsync()
         {
             var buildings = await _dbContext.Buildings
-				.Include(b => b.Floors).ToListAsync();
+                .Include(b => b.Floors).ToListAsync();
 
 			return buildings;
 		}
