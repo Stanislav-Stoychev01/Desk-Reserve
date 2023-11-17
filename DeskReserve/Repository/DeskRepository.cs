@@ -1,7 +1,7 @@
 ﻿using DeskReserve.Data.DBContext;
 using DeskReserve.Data.DBContext.Entity;
 using Microsoft.EntityFrameworkCore;
-using DeskReserve.Exception;
+using DeskReserve.Exceptions;
 
 namespace DeskReserve.Repository
 {

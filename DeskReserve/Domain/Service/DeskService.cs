@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using DeskReserve.Repository;
 using NuGet.Protocol.Core.Types;
 using DeskReserve.Mapper;
-using DeskReserve.Exception;
+using DeskReserve.Exceptions;
 using DeskReserve.Domain;
 
 namespace DeskReserve.Domain.Service

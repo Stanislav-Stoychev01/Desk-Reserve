@@ -1,6 +1,6 @@
 ﻿using DeskReserve.Data.DBContext.Entity;
 using DeskReserve.Domain;
-using DeskReserve.Exception;
+using DeskReserve.Exceptions;
 using DeskReserve.Repository;
 using DeskReserve.Domain.Service;
 using Moq;

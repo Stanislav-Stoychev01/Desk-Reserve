@@ -7,6 +7,8 @@ namespace DeskReserve.Data.DBContext
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
         : base(options) { }
+
+		public DbSet<Room> Rooms { get; set; }
         
         public DbSet<Building> Buildings { get; set; }
 
