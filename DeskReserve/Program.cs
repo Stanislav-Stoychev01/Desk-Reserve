@@ -1,12 +1,8 @@
 using DeskReserve.Data.DBContext;
-using DeskReserve.Domain.Service;
-using DeskReserve.Mapper;
 using DeskReserve.Repository;
 using DeskReserve.Interfaces;
-using DeskReserve.Repository;
 using DeskReserve.Services;
 using Microsoft.EntityFrameworkCore;
-using DeskReserve.Controllers;
 
 const String CorsDisablePolicy = "AllowAnyOrigin";
 var builder = WebApplication.CreateBuilder(args);
@@ -29,10 +25,9 @@ String connectionString = builder.Configuration["ConnectionStrings:DefaultConnec
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connectionString));
 
 builder.Services.AddScoped<IDeskService, DeskService>();
-builder.Services.AddScoped<DesksController, DesksController>();
 builder.Services.AddScoped<IDeskRepository, DeskRepository>();
+
 builder.Services.AddScoped<IBuildingService, BuildingService>();
-builder.Services.AddScoped<BuildingController, BuildingController>();
 builder.Services.AddScoped<IBuildingRepository, BuildingRepository>();
 
 builder.Services.AddScoped<IFloorRepository, FloorRepository>();

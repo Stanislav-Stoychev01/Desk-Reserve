@@ -1,39 +1,37 @@
 ﻿using DeskReserve.Data.DBContext.Entity;
 using DeskReserve.Domain;
+using DeskReserve.Utils;
+using System.ComponentModel.DataAnnotations;
 
 namespace DeskReserve.Mapper
 {
 	public static class RequestMapper
 	{
-		public static RequestDto ToRequestDto(this Request request)
-		{
-			return new RequestDto
-			{
-				RequestStartDate = request.RequestStartDate,
-				RequestEndDate = request.RequestEndDate,
-				State = request.State,
-				isPermanentlyOccupied = request.isPermanentlyOccupied,
-				DeskId = request.DeskId
-			};
-		}
-
 		public static Request ToRequest(this RequestDto requestDto)
 		{
-			return new Request
+			var request = new Request
 			{
-				isPermanentlyOccupied = requestDto.isPermanentlyOccupied,
-				RequestStartDate = requestDto.isPermanentlyOccupied ? DateTime.MinValue : requestDto.RequestStartDate,
-				RequestEndDate = requestDto.isPermanentlyOccupied ? DateTime.MinValue : requestDto.RequestEndDate,
+				OccupationStatus = requestDto.OccupationStatus,
 				State = requestDto.State,
 				DeskId = requestDto.DeskId
 			};
+
+			return request;
 		}
 
-		public static Request UpdateFromDto(this Request request, RequestDto requestDto)
+		public static Request ApproveRequest(this RequestDto requestDto)
 		{
-			request.State = requestDto.State;
+			var request = requestDto.ToRequest();
+			
+
+			
 
 			return request;
 		}
 	}
 }
+
+
+
+
+

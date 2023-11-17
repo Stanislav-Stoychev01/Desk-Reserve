@@ -10,7 +10,7 @@ namespace DeskReserve.Domain
 
         public BookingState State { get; set; } = BookingState.Requested;
 
-        public bool isPermanentlyOccupied { get; set; }
+        public OccupationStatus OccupationStatus { get; set; }
 
         public Guid DeskId { get; set; }
     }
