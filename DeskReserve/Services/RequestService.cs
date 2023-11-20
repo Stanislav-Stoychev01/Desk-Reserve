@@ -8,6 +8,7 @@ using DeskReserve.Domain;
 using DeskReserve.Interfaces;
 using RequestReserve.Interfaces;
 using DeskReserve.Utils;
+using System.ComponentModel.DataAnnotations;
 
 namespace DeskReserve.Services
 {
@@ -44,6 +45,9 @@ namespace DeskReserve.Services
 		public async Task<bool> CreateAsync(RequestDto requestDto)
 		{
 			Request request = requestDto.ToRequest();
+
+			var validationContext = new ValidationContext(request, serviceProvider: null, items: null);
+			Validator.ValidateObject(request, validationContext, validateAllProperties: true);
 
 			return await _repository.Create(request);
 		}

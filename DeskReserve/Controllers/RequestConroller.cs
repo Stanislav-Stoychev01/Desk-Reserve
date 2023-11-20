@@ -25,7 +25,8 @@ namespace DeskReserve.Controllers
 		public async Task<ActionResult<IEnumerable<Request>>> Get()
 		{
 			var requests = await _service.GetAllAsync();
-			return Ok(requests);
+
+			return !ReferenceEquals(requests, null) ? Ok(requests) : NotFound();
 		}
 
 		[HttpGet("{id}")]
@@ -51,7 +52,7 @@ namespace DeskReserve.Controllers
 		[HttpPost]
 		[ProducesResponseType(StatusCodes.Status201Created)]
 		[ProducesResponseType(StatusCodes.Status409Conflict)]
-		public async Task<ActionResult> Create(RequestDto requestDto)
+		public async Task<ActionResult<Request>> Post(RequestDto requestDto)
 		{
 			if (!ModelState.IsValid)
 			{

@@ -1,22 +1,15 @@
 ﻿using DeskReserve.Domain;
 using Moq;
-using Moq.Language;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using DeskReserve.Data.DBContext.Entity;
 using Microsoft.AspNetCore.Http;
 using DeskReserve.Exceptions;
-using DeskReserve.Domain.Service;
 using DeskReserve.Controllers;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc;
+using DeskReserve.Interfaces;
 
 namespace DeskReserve_Tests
 {
-	[TestFixture]
+    [TestFixture]
 	internal class RoomControllerTest
 	{
 		private RoomController _roomController;

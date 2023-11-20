@@ -2,7 +2,6 @@ using DeskReserve.Data.DBContext;
 using DeskReserve.Repository;
 using DeskReserve.Interfaces;
 using DeskReserve.Services;
-using DeskReserve.Domain;
 using Microsoft.EntityFrameworkCore;
 using RequestReserve.Interfaces;
 

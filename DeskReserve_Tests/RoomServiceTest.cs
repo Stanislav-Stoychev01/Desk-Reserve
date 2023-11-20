@@ -1,19 +1,13 @@
-﻿using DeskReserve.Domain.Service;
-using DeskReserve.Repository;
-using Moq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using DeskReserve.Domain.Service;
+﻿using Moq;
 using DeskReserve.Domain;
 using DeskReserve.Data.DBContext.Entity;
 using DeskReserve.Exceptions;
+using DeskReserve.Services;
+using DeskReserve.Interfaces;
 
 namespace DeskReserve_Tests
 {
-	[TestFixture]
+    [TestFixture]
 	internal class RoomServiceTest
 	{
 		private Mock<IRoomRepository> _roomRepositoryMock;

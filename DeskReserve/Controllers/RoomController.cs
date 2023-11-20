@@ -11,6 +11,7 @@ using DeskReserve.Domain;
 using System.Net.Mime;
 using System.Drawing;
 using DeskReserve.Exceptions;
+using DeskReserve.Interfaces;
 
 namespace DeskReserve.Controllers
 {
