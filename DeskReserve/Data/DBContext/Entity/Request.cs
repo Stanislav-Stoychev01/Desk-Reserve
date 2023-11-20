@@ -34,6 +34,9 @@ namespace DeskReserve.Data.DBContext.Entity
 		public Guid DeskId { get; set; }
 		public Desk Desk { get; set; }
 
-
+		public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

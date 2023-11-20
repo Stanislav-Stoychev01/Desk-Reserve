@@ -3,6 +3,7 @@ using DeskReserve.Repository;
 using DeskReserve.Interfaces;
 using DeskReserve.Services;
 using Microsoft.EntityFrameworkCore;
+using RequestReserve.Interfaces;
 
 const String CorsDisablePolicy = "AllowAnyOrigin";
 var builder = WebApplication.CreateBuilder(args);
@@ -32,6 +33,9 @@ builder.Services.AddScoped<IBuildingRepository, BuildingRepository>();
 
 builder.Services.AddScoped<IFloorRepository, FloorRepository>();
 builder.Services.AddScoped<IFloorService, FloorService>();
+
+builder.Services.AddScoped<IRequestRepository, RequestRepository>();
+builder.Services.AddScoped<IRequestService, RequestService>();
 
 var app = builder.Build();
 

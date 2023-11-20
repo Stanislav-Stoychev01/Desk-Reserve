@@ -7,26 +7,34 @@ namespace DeskReserve.Mapper
 {
 	public static class RequestMapper
 	{
-		public static Request ToRequest(this RequestDto requestDto)
+		public static Request ApproveFromDto( this  Request request, RequestDto requestDto)
 		{
-			var request = new Request
-			{
-				OccupationStatus = requestDto.OccupationStatus,
-				State = requestDto.State,
-				DeskId = requestDto.DeskId
-			};
+			//request.OccupationStatus = requestDto.OccupationStatus;
+			request.State = requestDto.State;
+			//request.DeskId = requestDto.DeskId;
 
 			return request;
 		}
 
-		public static Request ApproveRequest(this RequestDto requestDto)
+		public static RequestDto ToRequestDto(this Request request)
 		{
-			var request = requestDto.ToRequest();
-			
+			return new RequestDto {
+				OccupationStatus = request.OccupationStatus,
+				State = request.State,
+				DeskId = request.DeskId
+			};
+		}
 
-			
-
-			return request;
+		public static Request ToRequest(this RequestDto requestDto)
+		{
+			return new Request
+			{
+				RequestStartDate = requestDto.RequestStartDate,
+				RequestEndDate = requestDto.RequestEndDate,
+				OccupationStatus = requestDto.OccupationStatus,
+				State = requestDto.State,
+				DeskId = requestDto.DeskId
+			};
 		}
 	}
 }

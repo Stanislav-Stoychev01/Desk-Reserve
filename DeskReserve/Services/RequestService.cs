@@ -34,16 +34,16 @@ namespace DeskReserve.Services
 
 		public async Task<bool> ApproveAsync(Guid id, RequestDto requestDto)
 		{
-			var request = await _repository.GetById(id) ?? throw new EntityNotFoundException();
+			Request request = await _repository.GetById(id) ?? throw new EntityNotFoundException();
 
-			
+			request.ApproveFromDto(requestDto);
 
 			return await _repository.Approve(request);
 		}
 
 		public async Task<bool> CreateAsync(RequestDto requestDto)
 		{
-			Request request;
+			Request request = requestDto.ToRequest();
 
 			return await _repository.Create(request);
 		}
