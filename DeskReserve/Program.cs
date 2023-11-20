@@ -2,6 +2,7 @@ using DeskReserve.Data.DBContext;
 using DeskReserve.Repository;
 using DeskReserve.Interfaces;
 using DeskReserve.Services;
+using DeskReserve.Domain;
 using Microsoft.EntityFrameworkCore;
 using RequestReserve.Interfaces;
 
@@ -33,6 +34,9 @@ builder.Services.AddScoped<IBuildingRepository, BuildingRepository>();
 
 builder.Services.AddScoped<IFloorRepository, FloorRepository>();
 builder.Services.AddScoped<IFloorService, FloorService>();
+builder.Services.AddScoped<IRoomRepository, RoomRepository>();
+
+builder.Services.AddScoped<IRoomService, RoomService>();
 
 builder.Services.AddScoped<IRequestRepository, RequestRepository>();
 builder.Services.AddScoped<IRequestService, RequestService>();
