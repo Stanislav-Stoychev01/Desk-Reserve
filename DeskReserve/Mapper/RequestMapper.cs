@@ -19,6 +19,8 @@ namespace DeskReserve.Mapper
 		public static RequestDto ToRequestDto(this Request request)
 		{
 			return new RequestDto {
+				RequestStartDate = request.RequestStartDate,
+				RequestEndDate = request.RequestEndDate,
 				OccupationStatus = request.OccupationStatus,
 				State = request.State,
 				DeskId = request.DeskId

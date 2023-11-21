@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 using DeskReserve.Domain;
 using DeskReserve.Utils;
 
@@ -32,6 +33,7 @@ namespace DeskReserve.Data.DBContext.Entity
 
 		[Required]
 		public Guid DeskId { get; set; }
+		[JsonIgnore]
 		public Desk Desk { get; set; }
 
 		public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
