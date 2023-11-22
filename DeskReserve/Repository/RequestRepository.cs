@@ -18,17 +18,17 @@ namespace DeskReserve.Repository
 
 		public async Task<IEnumerable<Request>> GetAll()
 		{
-			return await _context.Requests.ToListAsync() ?? throw new EntityNotFoundException();
+			return await _context.Requests.ToListAsync() ?? throw new EntityNotFoundException("Request not found");
 		}
 
 		public async Task<Request> GetById(Guid id)
 		{
-			return await _context.Requests.FindAsync(id) ?? throw new EntityNotFoundException();
+			return await _context.Requests.FindAsync(id) ?? throw new EntityNotFoundException("Request not found");
 		}
 
 		public async Task<bool> Approve(Request request)
 		{
-			var existingRequest = await _context.Desks.FindAsync(request.RequestId) ?? throw new EntityNotFoundException();
+			var existingRequest = await _context.Desks.FindAsync(request.RequestId) ?? throw new EntityNotFoundException("Desk not found");
 
 			_context.Entry(request).State = EntityState.Modified;
 
@@ -38,11 +38,7 @@ namespace DeskReserve.Repository
 		public async Task<bool> Create(Request request)
 		{
 
-			var deskId = await _context.Desks.FindAsync(request.DeskId);
-
-		if (deskId == null) {
-				throw new EntityNotFoundException("123");
-			}
+			var deskId = await _context.Desks.FindAsync(request.DeskId) ?? throw new EntityNotFoundException("Desk not found");
 
 			_context.Requests.AddAsync(request);
 

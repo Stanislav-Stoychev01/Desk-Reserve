@@ -6,16 +6,7 @@ using System.ComponentModel.DataAnnotations;
 namespace DeskReserve.Mapper
 {
 	public static class RequestMapper
-	{
-		public static Request ApproveFromDto( this  Request request, RequestDto requestDto)
-		{
-			//request.OccupationStatus = requestDto.OccupationStatus;
-			request.State = requestDto.State;
-			//request.DeskId = requestDto.DeskId;
-
-			return request;
-		}
-
+	{ 
 		public static RequestDto ToRequestDto(this Request request)
 		{
 			return new RequestDto

@@ -42,7 +42,7 @@ namespace DeskReserve.Controllers
 			}
 			catch (EntityNotFoundException ex)
 			{
-				result = NotFound(ex);
+				result = NotFound(ex.Message);
 			}
 
 			return result;
@@ -63,7 +63,7 @@ namespace DeskReserve.Controllers
 			}
 			catch (EntityNotFoundException ex)
 			{
-				result = NotFound(ex);
+				result = NotFound(ex.Message);
 			}
 
 			return result;
@@ -93,7 +93,7 @@ namespace DeskReserve.Controllers
 			}
 			catch (EntityNotFoundException ex)
 			{
-				response = NotFound(ex);
+				response = NotFound(ex.Message);
 			}
 
 			return response;

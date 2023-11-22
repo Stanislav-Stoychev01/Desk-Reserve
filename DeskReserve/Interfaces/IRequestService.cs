@@ -9,8 +9,6 @@ namespace RequestReserve.Interfaces
 
 		Task<RequestDto> GetAsync(Guid id);
 
-		Task<bool> ApproveAsync(Guid id, RequestDto deskDto);
-
 		Task<bool> CreateAsync(RequestDto desk);
 
 	}

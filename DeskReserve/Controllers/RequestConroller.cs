@@ -42,7 +42,7 @@ namespace DeskReserve.Controllers
 			}
 			catch (EntityNotFoundException ex)
 			{
-				result = NotFound(ex);
+				result = NotFound(ex.Message);
 			}
 
 			return result;
@@ -77,26 +77,6 @@ namespace DeskReserve.Controllers
 			return result;
 		}
 
-		[HttpPut("{id}/approve")]
-		[Consumes(MediaTypeNames.Application.Json)]
-		[ProducesResponseType(StatusCodes.Status200OK)]
-		[ProducesResponseType(StatusCodes.Status404NotFound)]
-		public async Task<ActionResult> Approve(Guid id, [FromBody] RequestDto requestDto)
-		{
-			ActionResult result; 
-
-			try
-			{
-				var success = await _service.ApproveAsync(id, requestDto);
-				result = Ok(success);
-			}
-			catch (EntityNotFoundException ex)
-			{
-				result = NotFound(ex);
-			}
-
-			return result;
-		}
 	}
 
 }

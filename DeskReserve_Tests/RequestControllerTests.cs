@@ -93,7 +93,7 @@ namespace DeskReserve_Tests
 		}
 
 		[Test]
-		public async Task Create_WithValidRequestDto_ReturnsCreatedResult()
+		public async Task Put_WithValidRequestDto_ReturnsCreatedResult()
 		{
 			var requestDto = new RequestDto {
 				RequestStartDate = new DateTime(2023, 11, 20, 15, 48, 54),
@@ -116,5 +116,53 @@ namespace DeskReserve_Tests
 			Assert.IsNotNull(result);
 			Assert.That(resultStatusCode.StatusCode, Is.EqualTo(StatusCodes.Status201Created));
 		}
+
+		[Test]
+		public async Task Post_ReturnsStatusCodeCreatedOnFail()
+		{
+			var requestDto = new RequestDto {
+				RequestStartDate = new DateTime(2023, 11, 20, 15, 48, 54),
+				RequestEndDate = new DateTime(2023, 11, 21, 16, 00, 00, 00),
+				DeskId = Guid.Parse("3fa85f64-5717-4562-b3fc-2c963f66afa6"),
+				OccupationStatus = DeskReserve.Utils.OccupationStatus.Temporary,
+				State = DeskReserve.Utils.BookingState.Requested
+			};
+			var serviceMock = new Mock<IRequestService>();
+
+			serviceMock.Setup(service => service.CreateAsync(requestDto)).ReturnsAsync(false);
+			var controller = new RequestController(serviceMock.Object);
+
+			var result = await controller.Post(requestDto);
+			var resultStatusCode = result.Result as StatusCodeResult;
+
+			Assert.IsNotNull(result);
+			Assert.That(resultStatusCode.StatusCode, Is.EqualTo(StatusCodes.Status409Conflict));
+		}
+
+		[Test]
+		public async Task Post_ReturnsNotFoundResultWhenDeskDoesNotExist()
+		{
+			var requestDto = new RequestDto
+			{
+				RequestStartDate = new DateTime(2023, 11, 20, 15, 48, 54),
+				RequestEndDate = new DateTime(2023, 11, 21, 16, 00, 00, 00),
+				DeskId = Guid.Parse("3fa85f64-5717-4562-b3fc-2c963f66afa6"),
+				OccupationStatus = DeskReserve.Utils.OccupationStatus.Temporary,
+				State = DeskReserve.Utils.BookingState.Requested
+			};
+			var serviceMock = new Mock<IRequestService>();
+
+			serviceMock.Setup(service => service.CreateAsync(requestDto)).ThrowsAsync(new EntityNotFoundException());
+
+			var controller = new RequestController(serviceMock.Object);
+
+			var result = await controller.Post(requestDto);
+			var resultStatusCode = result.Result as NotFoundObjectResult;
+
+			Assert.That(resultStatusCode.StatusCode, Is.EqualTo(StatusCodes.Status404NotFound));
+
+		}
+
+		
 	}
 }

@@ -17,17 +17,17 @@ namespace DeskReserve.Repository
 
 		public async Task<IEnumerable<Desk>> GetAll()
 		{
-			return await _context.Desks.ToListAsync() ?? throw new EntityNotFoundException();
+			return await _context.Desks.ToListAsync();
 		}
 
 		public async Task<Desk> GetById(Guid id)
 		{
-			return await _context.Desks.FindAsync(id) ?? throw new EntityNotFoundException();
+			return await _context.Desks.FindAsync(id) ?? throw new EntityNotFoundException("Desk not found");
 		}
 
 		public async Task<bool> Update(Desk desk)
 		{
-			var existingDesk = await _context.Desks.FindAsync(desk.DeskId) ?? throw new EntityNotFoundException();
+			var existingDesk = await _context.Desks.FindAsync(desk.DeskId) ?? throw new EntityNotFoundException("Desk not found");
 
 			_context.Entry(desk).State = EntityState.Modified;
 
@@ -44,7 +44,7 @@ namespace DeskReserve.Repository
 
 		public async Task<bool> Delete(Guid id)
 		{
-			var desk = await _context.Desks.FindAsync(id) ?? throw new EntityNotFoundException();
+			var desk = await _context.Desks.FindAsync(id) ?? throw new EntityNotFoundException("Desk not found");
 
 			_context.Desks.Remove(desk);
 
