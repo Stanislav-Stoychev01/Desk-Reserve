@@ -14,10 +14,9 @@ namespace DeskReserve.Data.DBContext.Entity
 		public Guid RequestId { get; set; }
 
 		[Required]
-		public DateTime? RequestStartDate { get; set; }
-
+		public DateTime RequestStartDate { get; set; }
 		[Required]
-		public DateTime? RequestEndDate { get; set; }
+		public DateTime RequestEndDate { get; set; }
 
 		[Required]
 		public BookingState State { get; set; } = BookingState.Requested;
@@ -47,7 +46,7 @@ namespace DeskReserve.Data.DBContext.Entity
 
 				if (RequestStartDate != DateTime.MinValue || RequestEndDate != DateTime.MinValue)
 				{
-					validationResults.Add(new ValidationResult("For permanently occupied requests, RequestStartDate and RequestEndDate must be DateTime.MinValue.", new[] { nameof(RequestStartDate), nameof(RequestEndDate) }));
+					validationResults.Add(new ValidationResult("For permanently occupied requests, RequestStartDate and RequestEndDate must be null.", new[] { nameof(RequestStartDate), nameof(RequestEndDate) }));
 				}
 			}
 

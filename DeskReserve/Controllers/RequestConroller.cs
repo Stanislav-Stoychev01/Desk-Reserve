@@ -3,7 +3,6 @@ using DeskReserve.Data.DBContext.Entity;
 using DeskReserve.Domain;
 using System.Net.Mime;
 using DeskReserve.Exceptions;
-using DeskReserve.Interfaces;
 using RequestReserve.Interfaces;
 
 namespace DeskReserve.Controllers
@@ -52,16 +51,30 @@ namespace DeskReserve.Controllers
 		[HttpPost]
 		[ProducesResponseType(StatusCodes.Status201Created)]
 		[ProducesResponseType(StatusCodes.Status409Conflict)]
+		[ProducesResponseType(StatusCodes.Status404NotFound)]
 		public async Task<ActionResult<Request>> Post(RequestDto requestDto)
 		{
-			if (!ModelState.IsValid)
+			ActionResult result;
+
+			try
 			{
-				return BadRequest(ModelState);
+				var success = await _service.CreateAsync(requestDto);
+
+				if (success)
+				{
+					result = StatusCode(201);
+				}
+				else
+				{
+					result = StatusCode(409);
+				}
+			}
+			catch (Exception ex)
+			{
+				result = NotFound(ex.Message);
 			}
 
-			var success = await _service.CreateAsync(requestDto);
-
-			return success ? StatusCode(StatusCodes.Status201Created) : StatusCode(StatusCodes.Status409Conflict);
+			return result;
 		}
 
 		[HttpPut("{id}/approve")]
@@ -71,11 +84,6 @@ namespace DeskReserve.Controllers
 		public async Task<ActionResult> Approve(Guid id, [FromBody] RequestDto requestDto)
 		{
 			ActionResult result; 
-
-			if (!ModelState.IsValid)
-			{
-				return BadRequest(ModelState);
-			}
 
 			try
 			{

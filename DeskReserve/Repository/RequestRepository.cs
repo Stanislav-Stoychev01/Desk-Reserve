@@ -35,9 +35,15 @@ namespace DeskReserve.Repository
 			return await _context.SaveChangesAsync() > 0;
 		}
 
-
 		public async Task<bool> Create(Request request)
 		{
+
+			var deskId = await _context.Desks.FindAsync(request.DeskId);
+
+		if (deskId == null) {
+				throw new EntityNotFoundException("123");
+			}
+
 			_context.Requests.AddAsync(request);
 
 			return await _context.SaveChangesAsync() > 0;
