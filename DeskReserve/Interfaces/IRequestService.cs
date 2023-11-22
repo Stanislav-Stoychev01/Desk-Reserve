@@ -11,5 +11,7 @@ namespace RequestReserve.Interfaces
 
 		Task<bool> CreateAsync(RequestDto desk);
 
+		Task<RequestDto> UpdateAsync(Guid id, StateUpdateDto stateUpdateDto);
+
 	}
 }

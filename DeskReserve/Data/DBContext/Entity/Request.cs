@@ -2,7 +2,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
-using DeskReserve.Domain;
 using DeskReserve.Utils;
 
 namespace DeskReserve.Data.DBContext.Entity
@@ -50,10 +49,10 @@ namespace DeskReserve.Data.DBContext.Entity
 				}
 			}
 
-			if (State != BookingState.Requested)
+			/*if (State != BookingState.Requested)
 			{
 				validationResults.Add(new ValidationResult("Invalid state update. State can only be updated for requests with state Requested.", new[] { nameof(State) }));
-			}
+			}*/
 
 			return validationResults;
 		}

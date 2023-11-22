@@ -77,6 +77,33 @@ namespace DeskReserve.Controllers
 			return result;
 		}
 
+		[HttpPatch("{id}")]
+		[ProducesResponseType(StatusCodes.Status200OK, Type = typeof(RequestDto))]
+		[ProducesResponseType(StatusCodes.Status400BadRequest)]
+		[ProducesResponseType(StatusCodes.Status404NotFound)]
+		public async Task<ActionResult<RequestDto>> Patch(Guid id, [FromBody] StateUpdateDto stateUpdateDto)
+		{
+			ActionResult result;
+
+			try
+			{
+				var updatedRequest = await _service.UpdateAsync(id, stateUpdateDto);
+
+				result = Ok(updatedRequest);
+			}
+			catch (EntityNotFoundException ex)
+			{
+				result = NotFound(ex.Message);
+			}
+			catch (InvalidStateException ex)
+			{
+				result = BadRequest(ex.Message);
+			}
+
+			return result;
+		}
+
+
 	}
 
 }

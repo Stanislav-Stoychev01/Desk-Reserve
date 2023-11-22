@@ -42,6 +42,27 @@ namespace DeskReserve.Services
 
 			return await _repository.Create(request);
 		}
+
+		public async Task<RequestDto> UpdateAsync(Guid id, StateUpdateDto stateUpdateDto)
+		{
+			var request = await _repository.GetById(id) ?? throw new EntityNotFoundException("Request not found");
+
+			var validationContext = new ValidationContext(request, serviceProvider: null, items: null);
+			Validator.ValidateObject(request, validationContext, validateAllProperties: true);
+
+
+			if (stateUpdateDto.NewState != BookingState.Rejected || stateUpdateDto.NewState != BookingState.Approved)
+			{
+				throw new InvalidStateException("New state is invalid. It has to be appoved or rejected");
+			}
+
+			request.State = stateUpdateDto.NewState;
+
+			await _repository.Uppdate(request);
+
+			return request.ToRequestDto();
+		}
 	}
 
 }
+

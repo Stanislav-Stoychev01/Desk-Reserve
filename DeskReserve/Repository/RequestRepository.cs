@@ -26,7 +26,7 @@ namespace DeskReserve.Repository
 			return await _context.Requests.FindAsync(id) ?? throw new EntityNotFoundException("Request not found");
 		}
 
-		public async Task<bool> Approve(Request request)
+		public async Task<bool> Uppdate(Request request)
 		{
 			var existingRequest = await _context.Desks.FindAsync(request.RequestId) ?? throw new EntityNotFoundException("Desk not found");
 
