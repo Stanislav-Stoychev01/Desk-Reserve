@@ -3,7 +3,7 @@
 namespace DeskReserve.Exceptions
 {
     [Serializable]
-    internal class InvalidStateException : Exception
+    public class InvalidStateException : Exception
     {
         public InvalidStateException()
         {

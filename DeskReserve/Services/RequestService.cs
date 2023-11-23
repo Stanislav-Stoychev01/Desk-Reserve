@@ -51,7 +51,7 @@ namespace DeskReserve.Services
 			Validator.ValidateObject(request, validationContext, validateAllProperties: true);
 
 
-			if (stateUpdateDto.NewState != BookingState.Rejected || stateUpdateDto.NewState != BookingState.Approved)
+			if (stateUpdateDto.NewState != BookingState.Rejected && stateUpdateDto.NewState != BookingState.Approved)
 			{
 				throw new InvalidStateException("New state is invalid. It has to be appoved or rejected");
 			}

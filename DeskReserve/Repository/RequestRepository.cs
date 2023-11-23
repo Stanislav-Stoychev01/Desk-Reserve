@@ -28,7 +28,7 @@ namespace DeskReserve.Repository
 
 		public async Task<bool> Uppdate(Request request)
 		{
-			var existingRequest = await _context.Desks.FindAsync(request.RequestId) ?? throw new EntityNotFoundException("Desk not found");
+			var existingRequest = await _context.Requests.FindAsync(request.RequestId) ?? throw new EntityNotFoundException("Desk not found");
 
 			_context.Entry(request).State = EntityState.Modified;
 
